@@ -9,5 +9,6 @@ def next_available_ip():
     return 'foo'
 
 def new_client(name, ip, netmask):
+    print(clients_dir)
     pass
 

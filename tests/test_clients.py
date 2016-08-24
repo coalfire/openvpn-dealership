@@ -14,10 +14,18 @@ class ThereAreNoClientsTest(unittest.TestCase):
 
 class ClientsHaveAnOpeningTest(unittest.TestCase):
 
+    def setUp(self):
+        netmask = '255.255.255.0'
+        clients.new_client('one', '10.0.0.2', netmask)
+        clients.new_client('one', '10.0.0.4', netmask)
+        
     def test(self):
         expected = '10.0.0.3'
         result = clients.next_available_ip()
         self.assertEqual(expected, result)
+
+    def tearDown(self):
+        pass
 
 class ClientsAreContiguousTest(unittest.TestCase):
 
