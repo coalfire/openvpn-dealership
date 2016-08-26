@@ -61,12 +61,12 @@ class NewClientTest(unittest.TestCase):
         result = clients.new_client(name, ip, netmask, ccd=self.ccd)
         self.assertEqual(expected, result)
 
-#    def testDupClient(self):
-#        ip = '10.0.0.2'
-#        netmask = '255.255.255.0'
-#        name = 'dummy'
-#        result = clients.new_client(name, ip, netmask, self.ccd)
-#        self.assertRaises(clients.DuplicateClientError, clients.new_client, name, ip, netmask, self.ccd)
+    def testDupClient(self):
+        ip = '10.0.0.2'
+        netmask = '255.255.255.0'
+        name = 'dummy'
+        result = clients.new_client(name, ip, netmask, self.ccd)
+        self.assertRaises(clients.DuplicateClientError, clients.new_client, name, ip, netmask, self.ccd)
 
 
     def tearDown(self):
