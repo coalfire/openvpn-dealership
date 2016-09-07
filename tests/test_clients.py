@@ -26,6 +26,12 @@ class ParseConfTest(unittest.TestCase):
         expected = '/etc/openvpn/clients'
         self.assertEqual(expected, result)
 
+    def testAddresses(self):
+        result = clients.parse_conf(self.conf)['addresses']
+        # a /24 minus the broadcast, network, and server addresses
+        expected = 253 
+        self.assertEqual(expected, len(result))
+
 class ThereAreNoClientsTest(unittest.TestCase):
 
     def setUp(self):

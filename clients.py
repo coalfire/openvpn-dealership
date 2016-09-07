@@ -1,5 +1,6 @@
 import os
 import re
+import ipaddress
 
 class IpsSaturatedError(Exception): pass
 
@@ -23,10 +24,18 @@ def parse_conf(conf='/etc/openvpn/server.conf'):
                 ret['ip'] = match.group('ip')
                 ret['netmask'] = match.group('netmask')
 
+    # for example: '192.168.1.0/255.255.255.0'
+    cidr = '/'.join([ret['ip'], ret['netmask']])
+    network = ipaddress.IPv4Network(cidr)
+    # we slice off the first address since it is in use by the server
+    ret['addresses'] = list(network.hosts())[1:]
+    
     return ret
 
 def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
-    ip, netmask, ccd = parse_conf(conf)
+    config = parse_conf(conf)
+    addresses = config['addresses']
+
     return 'foo'
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
