@@ -6,8 +6,33 @@ sys.path.insert(0, os.path.abspath('..'))
 
 import clients
 
+class ParseConfTest(unittest.TestCase):
+
+    def setUp(self):
+        self.conf = './tests/files/server.conf'
+
+    def testNetmask(self):
+        result = clients.parse_conf(self.conf)['netmask']
+        expected = '255.255.255.0'
+        self.assertEqual(expected, result)
+
+    def testIP(self):
+        result = clients.parse_conf(self.conf)['ip']
+        expected = '10.0.0.0'
+        self.assertEqual(expected, result)
+
+    def testCCD(self):
+        result = clients.parse_conf(self.conf)['ccd']
+        expected = '/etc/openvpn/clients'
+        self.assertEqual(expected, result)
+
 #class ThereAreNoClientsTest(unittest.TestCase):
-#    
+#
+#    def setUp(self):
+#        self.ccd = './test_clients'
+#        os.makedirs(self.ccd)
+#        self.conf = './files/server.conf'
+#
 #    def test(self):
 #        expected = '10.0.0.2'
 #        result = clients.next_available_ip()

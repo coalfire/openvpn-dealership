@@ -1,12 +1,32 @@
 import os
+import re
 
 class IpsSaturatedError(Exception): pass
 
 class DuplicateClientError(Exception): pass
 
-conf = '/etc/openvpn/server.conf'
 
-def next_available_ip():
+def parse_conf(conf='/etc/openvpn/server.conf'):
+
+    server = re.compile(r'^server (?P<ip>[0-9.]+) (?P<netmask>[0-9.]+)')
+    ccd = re.compile(r'^client-config-dir (?P<ccd>.*)')
+    ret = {}
+
+    with open(conf, 'r') as f:
+        for line in f:
+            match = ccd.search(line)
+            if match:
+                print(match)
+                ret['ccd'] = match.group('ccd')
+
+            match = server.search(line)
+            if match:
+                ret['ip'] = match.group('ip')
+                ret['netmask'] = match.group('netmask')
+
+    return ret
+
+def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
     return 'foo'
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
