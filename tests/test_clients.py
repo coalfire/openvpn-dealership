@@ -26,18 +26,21 @@ class ParseConfTest(unittest.TestCase):
         expected = '/etc/openvpn/clients'
         self.assertEqual(expected, result)
 
-#class ThereAreNoClientsTest(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.ccd = './test_clients'
-#        os.makedirs(self.ccd)
-#        self.conf = './files/server.conf'
-#
-#    def test(self):
-#        expected = '10.0.0.2'
-#        result = clients.next_available_ip()
-#        self.assertEqual(expected, result)
-#
+class ThereAreNoClientsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './test_clients'
+        os.makedirs(self.ccd)
+        self.conf = './tests/files/server.conf'
+
+    def test(self):
+        expected = '10.0.0.2'
+        result = clients.next_available_ip(conf=self.conf, ccd=self.ccd)
+        self.assertEqual(expected, result)
+
+    def tearDown(self):
+        rmtree(self.ccd)
+
 #class ClientsHaveAnOpeningTest(unittest.TestCase):
 #
 #    def setUp(self):
@@ -93,10 +96,8 @@ class NewClientTest(unittest.TestCase):
         result = clients.new_client(name, ip, netmask, self.ccd)
         self.assertRaises(clients.DuplicateClientError, clients.new_client, name, ip, netmask, self.ccd)
 
-
     def tearDown(self):
         rmtree(self.ccd)
-
 
 if __name__ == '__main__':
     unittest.main

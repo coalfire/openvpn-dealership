@@ -16,7 +16,6 @@ def parse_conf(conf='/etc/openvpn/server.conf'):
         for line in f:
             match = ccd.search(line)
             if match:
-                print(match)
                 ret['ccd'] = match.group('ccd')
 
             match = server.search(line)
@@ -27,6 +26,7 @@ def parse_conf(conf='/etc/openvpn/server.conf'):
     return ret
 
 def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
+    ip, netmask, ccd = parse_conf(conf)
     return 'foo'
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
