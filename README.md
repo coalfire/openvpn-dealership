@@ -1,4 +1,4 @@
-# openvpn-dealership
+# vpn-dealership
 
 Auto-create openvpn client configs
 
