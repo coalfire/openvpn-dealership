@@ -42,10 +42,20 @@ class UsedIPsTest(unittest.TestCase):
         expected = 2
         self.assertEqual(expected, len(result))
 
+class UsedIPsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/files/ccd'
+
+    def testUsedIPs(self):
+        result = clients.used_ips(self.ccd)
+        expected = 2
+        self.assertEqual(expected, len(result))
+
 class ThereAreNoClientsTest(unittest.TestCase):
 
     def setUp(self):
-        self.ccd = './test_clients'
+        self.ccd = './tests/files/test_clients'
         os.makedirs(self.ccd)
         self.conf = './tests/files/server.conf'
 

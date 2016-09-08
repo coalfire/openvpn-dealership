@@ -32,14 +32,13 @@ def parse_server(conf='/etc/openvpn/server.conf'):
     return ret
 
 def used_ips(ccd='/etc/openvpn/clients'):
-    os.chdir(ccd)
     push = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
     used_ips = []
 
-    for config in os.listdir():
-        print(config)
-        with open(config, 'r') as f:
-            for line in f:
+    for f in os.listdir(ccd):
+        config = os.path.join(ccd, f)
+        with open(config, 'r') as c:
+            for line in c:
                 match = push.search(line)
                 if match:
                     ip = match.group('ip')
@@ -49,9 +48,11 @@ def used_ips(ccd='/etc/openvpn/clients'):
 
 def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
     config = parse_server(conf)
-    addresses = config['addresses']
+    addresses = set(config['addresses'])
+    ips_in_use = set(used_ips(ccd))
 
-    return 'foo'
+    remaining = sorted(list(addresses - ips_in_use))
+    return remaining[0].exploded
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
     ifconfig = 'ifconfig_push {0} {1}'.format(ip, netmask)
