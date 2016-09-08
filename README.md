@@ -7,7 +7,7 @@ Watch or check in later for updates.
 
 ## requirements
 * openvpn
-* python3
+* python3.3 or higher
 
 ## testing requirements
 * make
