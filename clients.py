@@ -6,11 +6,10 @@ class IpsSaturatedError(Exception): pass
 
 class DuplicateClientError(Exception): pass
 
+def parse_server(conf='/etc/openvpn/server.conf'):
 
-def parse_conf(conf='/etc/openvpn/server.conf'):
-
-    server = re.compile(r'^server (?P<ip>[0-9.]+) (?P<netmask>[0-9.]+)')
-    ccd = re.compile(r'^client-config-dir (?P<ccd>.*)')
+    server = re.compile(r'^server\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
+    ccd = re.compile(r'^client-config-dir\s+(?P<ccd>.*)')
     ret = {}
 
     with open(conf, 'r') as f:
@@ -32,8 +31,24 @@ def parse_conf(conf='/etc/openvpn/server.conf'):
     
     return ret
 
+def used_ips(ccd='/etc/openvpn/clients'):
+    os.chdir(ccd)
+    push = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
+    used_ips = []
+
+    for config in os.listdir():
+        print(config)
+        with open(config, 'r') as f:
+            for line in f:
+                match = push.search(line)
+                if match:
+                    ip = match.group('ip')
+                    used_ips += [ipaddress.ip_address(ip)]
+
+    return used_ips
+
 def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
-    config = parse_conf(conf)
+    config = parse_server(conf)
     addresses = config['addresses']
 
     return 'foo'

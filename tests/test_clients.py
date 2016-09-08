@@ -12,24 +12,34 @@ class ParseConfTest(unittest.TestCase):
         self.conf = './tests/files/server.conf'
 
     def testNetmask(self):
-        result = clients.parse_conf(self.conf)['netmask']
+        result = clients.parse_server(self.conf)['netmask']
         expected = '255.255.255.0'
         self.assertEqual(expected, result)
 
     def testIP(self):
-        result = clients.parse_conf(self.conf)['ip']
+        result = clients.parse_server(self.conf)['ip']
         expected = '10.0.0.0'
         self.assertEqual(expected, result)
 
     def testCCD(self):
-        result = clients.parse_conf(self.conf)['ccd']
+        result = clients.parse_server(self.conf)['ccd']
         expected = '/etc/openvpn/clients'
         self.assertEqual(expected, result)
 
     def testAddresses(self):
-        result = clients.parse_conf(self.conf)['addresses']
-        # a /24 minus the broadcast, network, and server addresses
+        result = clients.parse_server(self.conf)['addresses']
+        # 256 in a /24 minus the broadcast, network, and server addresses
         expected = 253 
+        self.assertEqual(expected, len(result))
+
+class UsedIPsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/files/ccd'
+
+    def testUsedIPs(self):
+        result = clients.used_ips(self.ccd)
+        expected = 2
         self.assertEqual(expected, len(result))
 
 class ThereAreNoClientsTest(unittest.TestCase):
