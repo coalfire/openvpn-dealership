@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 import clients
 
+
 class ParseConfTest(unittest.TestCase):
 
     def setUp(self):
@@ -32,6 +33,7 @@ class ParseConfTest(unittest.TestCase):
         expected = 253
         self.assertEqual(expected, len(result))
 
+
 class UsedIPsTest(unittest.TestCase):
 
     def setUp(self):
@@ -52,6 +54,7 @@ class UsedIPsTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+
 class ThereAreNoClientsTest(unittest.TestCase):
 
     def setUp(self):
@@ -66,6 +69,7 @@ class ThereAreNoClientsTest(unittest.TestCase):
 
     def tearDown(self):
         rmtree(self.ccd)
+
 
 class ClientsHaveAnOpeningTest(unittest.TestCase):
 
@@ -89,6 +93,7 @@ class ClientsHaveAnOpeningTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+
 class ThereAreNoIpsAvailableTest(unittest.TestCase):
 
     def setUp(self):
@@ -108,6 +113,7 @@ class ThereAreNoIpsAvailableTest(unittest.TestCase):
 
     def tearDown(self):
         rmtree(self.ccd)
+
 
 class NewClientTest(unittest.TestCase):
 

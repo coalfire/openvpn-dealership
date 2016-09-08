@@ -2,9 +2,12 @@ import os
 import re
 import ipaddress
 
+
 class IPsSaturatedError(Exception): pass
 
+
 class DuplicateClientError(Exception): pass
+
 
 def parse_server(conf='/etc/openvpn/server.conf'):
     """
@@ -34,6 +37,7 @@ def parse_server(conf='/etc/openvpn/server.conf'):
 
     return ret
 
+
 def used_ips(ccd='/etc/openvpn/clients'):
     """
     Return a list of ipaddress objects in use by clients in the ccd directory.
@@ -53,6 +57,7 @@ def used_ips(ccd='/etc/openvpn/clients'):
 
     return ips_used
 
+
 def next_available_ip(conf='/etc/openvpn/server.conf',
                       ccd='/etc/openvpn/clients'):
     """
@@ -68,6 +73,7 @@ def next_available_ip(conf='/etc/openvpn/server.conf',
     if len(remaining) == 0:
         raise IPsSaturatedError
     return remaining[0].exploded
+
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
     """
