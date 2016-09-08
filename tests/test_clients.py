@@ -29,7 +29,7 @@ class ParseConfTest(unittest.TestCase):
     def testAddresses(self):
         result = clients.parse_server(self.conf)['addresses']
         # 256 in a /24 minus the broadcast, network, and server addresses
-        expected = 253 
+        expected = 253
         self.assertEqual(expected, len(result))
 
 class UsedIPsTest(unittest.TestCase):
@@ -103,7 +103,8 @@ class ThereAreNoIpsAvailableTest(unittest.TestCase):
             clients.new_client(name, ip, netmask, self.ccd)
 
     def test(self):
-        self.assertRaises(clients.IPsSaturatedError, clients.next_available_ip, self.conf, self.ccd)
+        err = clients.IPsSaturatedError
+        self.assertRaises(err, clients.next_available_ip, self.conf, self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)
@@ -115,7 +116,10 @@ class NewClientTest(unittest.TestCase):
         os.makedirs(self.ccd)
 
     def testNewClient(self):
-        expected = {'name': 'dummy', 'ifconfig': 'ifconfig_push 10.0.0.2 255.255.255.0'}
+        expected = {
+            'name': 'dummy',
+            'ifconfig': 'ifconfig_push 10.0.0.2 255.255.255.0'
+            }
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
@@ -126,8 +130,9 @@ class NewClientTest(unittest.TestCase):
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
-        result = clients.new_client(name, ip, netmask, self.ccd)
-        self.assertRaises(clients.DuplicateClientError, clients.new_client, name, ip, netmask, self.ccd)
+        clients.new_client(name, ip, netmask, self.ccd)
+        err = clients.DuplicateClientError
+        self.assertRaises(err, clients.new_client, name, ip, netmask, self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)

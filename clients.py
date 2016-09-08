@@ -7,6 +7,9 @@ class IPsSaturatedError(Exception): pass
 class DuplicateClientError(Exception): pass
 
 def parse_server(conf='/etc/openvpn/server.conf'):
+    """
+    Return a dict of server info parsed from the server config file.
+    """
 
     server = re.compile(r'^server\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
     ccd = re.compile(r'^client-config-dir\s+(?P<ccd>.*)')
@@ -28,12 +31,16 @@ def parse_server(conf='/etc/openvpn/server.conf'):
     network = ipaddress.IPv4Network(cidr)
     # we slice off the first address since it is in use by the server
     ret['addresses'] = list(network.hosts())[1:]
-    
+
     return ret
 
 def used_ips(ccd='/etc/openvpn/clients'):
-    push = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
-    used_ips = []
+    """
+    Return a list of ipaddress objects in use by clients in the ccd directory.
+    """
+
+    push = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+[0-9.]+')
+    ips_used = []
 
     for f in os.listdir(ccd):
         config = os.path.join(ccd, f)
@@ -42,11 +49,17 @@ def used_ips(ccd='/etc/openvpn/clients'):
                 match = push.search(line)
                 if match:
                     ip = match.group('ip')
-                    used_ips += [ipaddress.ip_address(ip)]
+                    ips_used += [ipaddress.ip_address(ip)]
 
-    return used_ips
+    return ips_used
 
-def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients'):
+def next_available_ip(conf='/etc/openvpn/server.conf',
+                      ccd='/etc/openvpn/clients'):
+    """
+    Return a string representation of the next IP in the server's range
+    not in used by a client in the ccd directory.
+    """
+
     config = parse_server(conf)
     addresses = set(config['addresses'])
     ips_in_use = set(used_ips(ccd))
@@ -57,6 +70,11 @@ def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients
     return remaining[0].exploded
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
+    """
+    Create a new client file in the ccd directory.
+    Return a dict of client information.
+    """
+
     ifconfig = 'ifconfig_push {0} {1}'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
