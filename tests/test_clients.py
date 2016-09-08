@@ -96,14 +96,14 @@ class ThereAreNoIpsAvailableTest(unittest.TestCase):
         os.makedirs(self.ccd)
         self.conf = './tests/files/server.conf'
         netmask = clients.parse_server(self.conf)['netmask']
-        for i in range(2, 13):
+        for i in range(2, 255):
             s = str(i)
             name = 'client' + s
             ip = '10.0.0.' + s
             clients.new_client(name, ip, netmask, self.ccd)
 
     def test(self):
-        self.assertRaises(clients.IpsSaturatedError, clients.next_available_ip, self.conf, self.ccd)
+        self.assertRaises(clients.IPsSaturatedError, clients.next_available_ip, self.conf, self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)

@@ -2,7 +2,7 @@ import os
 import re
 import ipaddress
 
-class IpsSaturatedError(Exception): pass
+class IPsSaturatedError(Exception): pass
 
 class DuplicateClientError(Exception): pass
 
@@ -52,6 +52,8 @@ def next_available_ip(conf='/etc/openvpn/server.conf', ccd='/etc/openvpn/clients
     ips_in_use = set(used_ips(ccd))
 
     remaining = sorted(list(addresses - ips_in_use))
+    if len(remaining) == 0:
+        raise IPsSaturatedError
     return remaining[0].exploded
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
