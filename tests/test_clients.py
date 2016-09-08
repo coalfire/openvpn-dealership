@@ -36,26 +36,26 @@ class UsedIPsTest(unittest.TestCase):
 
     def setUp(self):
         self.ccd = './tests/files/ccd'
+        os.makedirs(self.ccd)
+        netmask = '255.255.255.0'
+        for i in range(2, 12):
+            s = str(i)
+            name = 'client' + s
+            ip = '192.168.1.' + s
+            clients.new_client(name, ip, netmask, self.ccd)
 
     def testUsedIPs(self):
         result = clients.used_ips(self.ccd)
-        expected = 2
+        expected = 10
         self.assertEqual(expected, len(result))
 
-class UsedIPsTest(unittest.TestCase):
-
-    def setUp(self):
-        self.ccd = './tests/files/ccd'
-
-    def testUsedIPs(self):
-        result = clients.used_ips(self.ccd)
-        expected = 2
-        self.assertEqual(expected, len(result))
+    def tearDown(self):
+        rmtree(self.ccd)
 
 class ThereAreNoClientsTest(unittest.TestCase):
 
     def setUp(self):
-        self.ccd = './tests/files/test_clients'
+        self.ccd = './tests/files/ccd_empty'
         os.makedirs(self.ccd)
         self.conf = './tests/files/server.conf'
 
@@ -68,6 +68,10 @@ class ThereAreNoClientsTest(unittest.TestCase):
         rmtree(self.ccd)
 
 #class ClientsHaveAnOpeningTest(unittest.TestCase):
+#
+#    def setUp(self):
+#        self.ccd = './tests/files/ccd_empty'
+#        self.conf = './tests/files/server.conf'
 #
 #    def setUp(self):
 #        netmask = '255.255.255.0'
