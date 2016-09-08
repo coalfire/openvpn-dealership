@@ -59,7 +59,7 @@ class ThereAreNoClientsTest(unittest.TestCase):
         os.makedirs(self.ccd)
         self.conf = './tests/files/server.conf'
 
-    def test(self):
+    def testThereAreNoClients(self):
         expected = '10.0.0.2'
         result = clients.next_available_ip(conf=self.conf, ccd=self.ccd)
         self.assertEqual(expected, result)
@@ -67,25 +67,28 @@ class ThereAreNoClientsTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
-#class ClientsHaveAnOpeningTest(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.ccd = './tests/files/ccd_empty'
-#        self.conf = './tests/files/server.conf'
-#
-#    def setUp(self):
-#        netmask = '255.255.255.0'
-#        clients.new_client('one', '10.0.0.2', netmask)
-#        clients.new_client('one', '10.0.0.4', netmask)
-#        
-#    def test(self):
-#        expected = '10.0.0.3'
-#        result = clients.next_available_ip()
-#        self.assertEqual(expected, result)
-#
-#    def tearDown(self):
-#        pass
-#
+class ClientsHaveAnOpeningTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/files/ccd'
+        os.makedirs(self.ccd)
+        self.conf = './tests/files/server.conf'
+        netmask = clients.parse_server(self.conf)['netmask']
+        for i in range(2, 13):
+            s = str(i)
+            name = 'client' + s
+            ip = '10.0.0.' + s
+            clients.new_client(name, ip, netmask, self.ccd)
+        clients.new_client('client1', '10.0.0.129', netmask, self.ccd)
+
+    def test(self):
+        expected = '10.0.0.13'
+        result = clients.next_available_ip(self.conf, self.ccd)
+        self.assertEqual(expected, result)
+
+    def tearDown(self):
+        rmtree(self.ccd)
+
 #class ClientsAreContiguousTest(unittest.TestCase):
 #
 #    def test(self):
