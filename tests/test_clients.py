@@ -89,20 +89,6 @@ class ClientsHaveAnOpeningTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
-#class ClientsAreContiguousTest(unittest.TestCase):
-#
-#    def test(self):
-#        expected = '10.0.0.5'
-#        result = clients.next_available_ip()
-#        self.assertEqual(expected, result)
-#
-#class IpsRollOverOctetsTest(unittest.TestCase):
-#
-#    def test(self):
-#        expected = '10.0.1.0'
-#        result = clients.next_available_ip()
-#        self.assertEqual(expected, result)
-#
 #class ThereAreNoIpsAvailableTest(unittest.TestCase):
 #
 #    def test(self):
