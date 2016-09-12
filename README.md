@@ -9,10 +9,12 @@ Watch or check in later for updates.
 * openvpn
 * python3.3 or higher (for `ipaddress`)
 
-## testing requirements
+## testing/devel requirements
 * make
 * nosetest
 * rednose
+* pylint
+* pep8
 
 ## testing
 Run `make` in the top directory.
