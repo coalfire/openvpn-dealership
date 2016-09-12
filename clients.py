@@ -15,7 +15,12 @@ def parse_server(conf='/etc/openvpn/server.conf'):
     Return a dict of server info parsed from the server config file.
     """
 
+    # for example:
+    # server 192.168.1.0 255.255.255.0
     server = re.compile(r'^server\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
+
+    # for example:
+    # client-config-dir /etc/openvpn/clients
     ccd = re.compile(r'^client-config-dir\s+(?P<ccd>.*)')
     ret = {}
 
@@ -44,17 +49,13 @@ def used_ips(ccd='/etc/openvpn/clients'):
     Return a list of ipaddress objects in use by clients in the ccd directory.
     """
 
-    push = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+[0-9.]+')
     ips_used = []
 
     for f in os.listdir(ccd):
-        config = os.path.join(ccd, f)
-        with open(config, 'r') as c:
-            for line in c:
-                match = push.search(line)
-                if match:
-                    ip = match.group('ip')
-                    ips_used += [ipaddress.ip_address(ip)]
+        client = parse_client(f, ccd)
+        if 'ip' in client:
+            ip = client['ip']
+            ips_used += [ipaddress.ip_address(ip)]
 
     return ips_used
 
@@ -98,6 +99,9 @@ def parse_client(name, ccd='/etc/openvpn/clients'):
     """
 
     config = os.path.join(ccd, name)
+
+    # for example:
+    # ifconfig_push 192.168.1.2 255.255.255.0
     r = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
 
     with open(config, 'r') as c:
