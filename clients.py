@@ -71,10 +71,10 @@ def next_available_ip(conf='/etc/openvpn/server.conf',
     addresses = set(config['addresses'])
     ips_in_use = set(used_ips(ccd))
 
-    remaining = sorted(list(addresses - ips_in_use))
+    remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
         raise IPsSaturatedError
-    return remaining[0].exploded
+    return sorted(remaining)[0].exploded
 
 
 def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
