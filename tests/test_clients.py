@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath('..'))
 import clients
 
 
-class ParseConfTest(unittest.TestCase):
+class ParseServerTest(unittest.TestCase):
 
     def setUp(self):
         self.conf = './tests/files/server.conf'
