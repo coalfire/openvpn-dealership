@@ -184,9 +184,9 @@ class LockCCDTest(unittest.TestCase):
         self.assertTrue(self.lockfile)
 
     def testLockedLockCCD(self):
-        clients.lock_ccd(self.ccd)
         self.lockfile = clients.lock_ccd(self.ccd)
-        self.assertFalse(self.lockfile)
+        clients.lock_ccd(self.ccd)
+        self.assertFalse(clients.lock_ccd(self.ccd))
 
     def tearDown(self):
         if self.lockfile:
