@@ -174,6 +174,24 @@ class NoClientParseClientTest(unittest.TestCase):
         err = FileNotFoundError
         self.assertRaises(err, clients.parse_client, name, ccd)
 
+class LockCCDTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+
+    def testLockCCD(self):
+        self.lockfile = clients.lock_ccd(self.ccd)
+        self.assertTrue(self.lockfile)
+
+    def testLockedLockCCD(self):
+        clients.lock_ccd(self.ccd)
+        self.lockfile = clients.lock_ccd(self.ccd)
+        self.assertFalse(self.lockfile)
+
+    def tearDown(self):
+        if self.lockfile:
+            os.remove(self.lockfile)
+
 
 if __name__ == '__main__':
     unittest.main

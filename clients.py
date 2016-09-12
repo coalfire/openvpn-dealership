@@ -1,6 +1,7 @@
 import os
 import re
 import ipaddress
+import tempfile
 
 
 class IPsSaturatedError(Exception): pass
@@ -90,10 +91,12 @@ def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
 
     return parse_client(name, ccd=ccd)
 
+
 def parse_client(name, ccd='/etc/openvpn/clients'):
     """
     Return a dict of client information.
     """
+
     config = os.path.join(ccd, name)
     r = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
 
@@ -105,3 +108,25 @@ def parse_client(name, ccd='/etc/openvpn/clients'):
                 netmask = match.group('netmask')
 
     return {'name': name, 'ip': ip, 'netmask': netmask}
+
+
+def lock_ccd(ccd='/etc/openvpn/clients'):
+    """
+    Create a ccd-specific lockfile.
+    Return full path of lockfile if successful, 
+    False if lockfile already exists.
+    """
+
+    abspath = os.path.abspath(ccd)
+    fn = abspath.replace('/', '_')
+    tmpdir = tempfile.gettempdir()
+
+    lockfile = os.path.join(tmpdir, fn)
+    pid = str(os.getpid())
+
+    try:
+        with open(lockfile, 'x') as f:
+            f.write(pid)
+        return lockfile
+    except:
+        return False
