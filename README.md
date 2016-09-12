@@ -7,7 +7,7 @@ Watch or check in later for updates.
 
 ## requirements
 * openvpn
-* python3.3 or higher
+* python3.3 or higher (for `ipaddress`)
 
 ## testing requirements
 * make
