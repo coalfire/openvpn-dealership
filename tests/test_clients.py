@@ -166,6 +166,13 @@ class ParseClientTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+class NoClientParseClientTest(unittest.TestCase):
+
+    def test(self):
+        name = 'does_not_exist'
+        ccd = './tests/files/ccd'
+        err = FileNotFoundError
+        self.assertRaises(err, clients.parse_client, name, ccd)
 
 
 if __name__ == '__main__':
