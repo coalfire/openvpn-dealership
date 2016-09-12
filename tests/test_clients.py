@@ -55,59 +55,38 @@ class UsedIPsTest(unittest.TestCase):
         rmtree(self.ccd)
 
 
-class ThereAreNoClientsTest(unittest.TestCase):
-
+class NextAvailableIPTest(unittest.TestCase):
+    
     def setUp(self):
         self.ccd = './tests/files/ccd_empty'
         os.makedirs(self.ccd)
         self.conf = './tests/files/server.conf'
+        self.netmask = clients.parse_server(self.conf)['netmask']
 
     def testThereAreNoClients(self):
         expected = '10.0.0.2'
         result = clients.next_available_ip(conf=self.conf, ccd=self.ccd)
         self.assertEqual(expected, result)
 
-    def tearDown(self):
-        rmtree(self.ccd)
-
-
-class ClientsHaveAnOpeningTest(unittest.TestCase):
-
-    def setUp(self):
-        self.ccd = './tests/files/ccd'
-        os.makedirs(self.ccd)
-        self.conf = './tests/files/server.conf'
-        netmask = clients.parse_server(self.conf)['netmask']
+    def testClientsHaveAnOpening(self):
         for i in range(2, 13):
             s = str(i)
             name = 'client' + s
             ip = '10.0.0.' + s
-            clients.new_client(name, ip, netmask, self.ccd)
-        clients.new_client('client1', '10.0.0.129', netmask, self.ccd)
+            clients.new_client(name, ip, self.netmask, self.ccd)
+        clients.new_client('client1', '10.0.0.129', self.netmask, self.ccd)
 
-    def test(self):
         expected = '10.0.0.13'
         result = clients.next_available_ip(self.conf, self.ccd)
         self.assertEqual(expected, result)
 
-    def tearDown(self):
-        rmtree(self.ccd)
-
-
-class ThereAreNoIpsAvailableTest(unittest.TestCase):
-
-    def setUp(self):
-        self.ccd = './tests/files/ccd'
-        os.makedirs(self.ccd)
-        self.conf = './tests/files/server.conf'
-        netmask = clients.parse_server(self.conf)['netmask']
+    def testNoIPsAvailable(self):
         for i in range(2, 255):
             s = str(i)
             name = 'client' + s
             ip = '10.0.0.' + s
-            clients.new_client(name, ip, netmask, self.ccd)
+            clients.new_client(name, ip, self.netmask, self.ccd)
 
-    def test(self):
         err = clients.IPsSaturatedError
         self.assertRaises(err, clients.next_available_ip, self.conf, self.ccd)
 
@@ -150,12 +129,13 @@ class ParseClientTest(unittest.TestCase):
     def setUp(self):
         self.ccd = './tests/clients/ccd'
         os.makedirs(self.ccd)
+
+    def testParseClient(self):
         self.ip = '10.0.0.2'
         self.netmask = '255.255.255.0'
         self.name = 'dummy'
         clients.new_client(self.name, self.ip, self.netmask, ccd=self.ccd)
 
-    def test(self):
         result = clients.parse_client(self.name, ccd=self.ccd)
         expected = {
             'name':    self.name,
@@ -164,17 +144,13 @@ class ParseClientTest(unittest.TestCase):
             }
         self.assertEqual(expected, result)
 
+    def testClientMissing(self):
+        name = 'does_not_exist'
+        err = FileNotFoundError
+        self.assertRaises(err, clients.parse_client, name, self.ccd)
+
     def tearDown(self):
         rmtree(self.ccd)
-
-
-class NoClientParseClientTest(unittest.TestCase):
-
-    def test(self):
-        name = 'does_not_exist'
-        ccd = './tests/files/ccd'
-        err = FileNotFoundError
-        self.assertRaises(err, clients.parse_client, name, ccd)
 
 
 class LockCCDTest(unittest.TestCase):
