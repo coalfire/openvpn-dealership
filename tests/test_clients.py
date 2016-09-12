@@ -157,19 +157,37 @@ class LockCCDTest(unittest.TestCase):
 
     def setUp(self):
         self.ccd = './tests/clients/ccd'
+        self.lockfile = clients.lock_ccd(self.ccd)
 
     def testLockCCD(self):
-        self.lockfile = clients.lock_ccd(self.ccd)
         self.assertTrue(self.lockfile)
 
     def testLockedLockCCD(self):
-        self.lockfile = clients.lock_ccd(self.ccd)
         self.assertFalse(clients.lock_ccd(self.ccd))
 
     def tearDown(self):
         if self.lockfile:
             os.remove(self.lockfile)
 
+
+class RemoveCCDLockTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+        self.lockfile = clients.lock_ccd(self.ccd)
+        print(self.lockfile)
+        self.fakelockfile = './tests/files/nosuchlockfile'
+
+    def testRemoveCCDLockTest(self):
+        expected = self.lockfile
+        result = clients.remove_ccd_lock(self.lockfile)
+        self.assertEqual(expected, result)
+
+    def tearDown(self):
+        try:
+            os.remove(self.lockfile)
+        except OSError:
+            pass
 
 if __name__ == '__main__':
     unittest.main

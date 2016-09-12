@@ -121,11 +121,13 @@ def lock_ccd(ccd='/etc/openvpn/clients'):
     Return False if lockfile already exists.
     """
 
+    tmpdir = tempfile.gettempdir()
+    lockdir = os.path.join(tmpdir, 'vpn-dealer')
+    os.makedirs(lockdir, exist_ok=True)
+
     abspath = os.path.abspath(ccd)
     fn = abspath.replace('/', '_')
-    tmpdir = tempfile.gettempdir()
-
-    lockfile = os.path.join(tmpdir, fn)
+    lockfile = os.path.join(lockdir, fn)
     pid = str(os.getpid())
 
     try:
@@ -134,3 +136,18 @@ def lock_ccd(ccd='/etc/openvpn/clients'):
         return lockfile
     except:
         return False
+
+
+def remove_ccd_lock(lockfile):
+    """
+    Remove the specified lockfile.
+    Return the full path of the lockfile if successul.
+    Raise an exception if not successfile.
+    """
+
+    print(lockfile)
+    try:
+        os.remove(lockfile)
+        return lockfile
+    except:
+        raise
