@@ -118,17 +118,18 @@ class ThereAreNoIpsAvailableTest(unittest.TestCase):
 class NewClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.ccd = './test_clients'
+        self.ccd = './tests/clients/ccd'
         os.makedirs(self.ccd)
 
     def testNewClient(self):
-        expected = {
-            'name': 'dummy',
-            'ifconfig': 'ifconfig_push 10.0.0.2 255.255.255.0'
-            }
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
+        expected = {
+            'name':    name,
+            'ip':      ip,
+            'netmask': netmask,
+            }
         result = clients.new_client(name, ip, netmask, ccd=self.ccd)
         self.assertEqual(expected, result)
 
@@ -142,6 +143,30 @@ class NewClientTest(unittest.TestCase):
 
     def tearDown(self):
         rmtree(self.ccd)
+
+class ParseClientTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+        os.makedirs(self.ccd)
+        self.ip = '10.0.0.2'
+        self.netmask = '255.255.255.0'
+        self.name = 'dummy'
+        clients.new_client(self.name, self.ip, self.netmask, ccd=self.ccd)
+
+    def test(self):
+        result = clients.parse_client(self.name, ccd=self.ccd)
+        expected = {
+            'name':    self.name,
+            'ip':      self.ip,
+            'netmask': self.netmask,
+            }
+        self.assertEqual(expected, result)
+
+    def tearDown(self):
+        rmtree(self.ccd)
+
+
 
 if __name__ == '__main__':
     unittest.main

@@ -88,4 +88,20 @@ def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
     with open(config, 'w') as f:
         f.write(ifconfig)
 
-    return {'name': name, 'ifconfig': ifconfig}
+    return parse_client(name, ccd=ccd)
+
+def parse_client(name, ccd='/etc/openvpn/clients'):
+    """
+    Return a dict of client information.
+    """
+    config = os.path.join(ccd, name)
+    r = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
+
+    with open(config, 'r') as c:
+        for line in c:
+            match = r.search(line)
+            if match:
+                ip      = match.group('ip')
+                netmask = match.group('netmask')
+
+    return {'name': name, 'ip': ip, 'netmask': netmask}
