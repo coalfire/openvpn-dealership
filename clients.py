@@ -117,8 +117,8 @@ def parse_client(name, ccd='/etc/openvpn/clients'):
 def lock_ccd(ccd='/etc/openvpn/clients'):
     """
     Create a ccd-specific lockfile.
-    Return full path of lockfile if successful, 
-    False if lockfile already exists.
+    Return full path of lockfile if successful.
+    Return False if lockfile already exists.
     """
 
     abspath = os.path.abspath(ccd)

@@ -144,6 +144,7 @@ class NewClientTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+
 class ParseClientTest(unittest.TestCase):
 
     def setUp(self):
@@ -166,6 +167,7 @@ class ParseClientTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+
 class NoClientParseClientTest(unittest.TestCase):
 
     def test(self):
@@ -173,6 +175,7 @@ class NoClientParseClientTest(unittest.TestCase):
         ccd = './tests/files/ccd'
         err = FileNotFoundError
         self.assertRaises(err, clients.parse_client, name, ccd)
+
 
 class LockCCDTest(unittest.TestCase):
 
@@ -185,7 +188,6 @@ class LockCCDTest(unittest.TestCase):
 
     def testLockedLockCCD(self):
         self.lockfile = clients.lock_ccd(self.ccd)
-        clients.lock_ccd(self.ccd)
         self.assertFalse(clients.lock_ccd(self.ccd))
 
     def tearDown(self):
