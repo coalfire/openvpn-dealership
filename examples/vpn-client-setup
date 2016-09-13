@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# THIS IS NOT FUNCTIONAL YET.
+
+cd ~/src/EasyRSA-3.0.1
+
+# Create a client cert
+./easyrsa build-client-full "$client" nopass
+
+# scp the client cert, client key, client conf, server CA, tls-auth.key 
+# to client.
+# Create the CCD file for the client on the server, and chmod 644 it.
