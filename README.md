@@ -18,3 +18,10 @@ Watch or check in later for updates.
 
 ## testing
 Run `make` in the top directory.
+
+## concept
+
+The vpn server should not host the CA. 
+A provisioning server should host the CA,
+and scp keys over to the vpn server.
+The provisioning server should not be accessible from the vpn server.
