@@ -221,10 +221,14 @@ class WaitForLockTest(unittest.TestCase):
         self.ccd = './tests/clients/ccd'
         self.lockfile = ''
 
-    def testWaitForLock(self):
-        self.lockfile = clients.wait_for_lock(ccd=self.ccd, timeout=0, wait=0)
+    def testNotLocked(self):
+        self.lockfile = clients.wait_for_lock(ccd=self.ccd, timeout=1, wait=0.5)
         self.assertTrue(self.lockfile)
     
+    def testTimeoutLocked(self):
+        self.lockfile = clients._try_lock_ccd(ccd=self.ccd)
+        self.assertFalse(clients.wait_for_lock(ccd=self.ccd, timeout=0.1, wait=0.1))
+
     def tearDown(self):
         os.remove(self.lockfile)
 

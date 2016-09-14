@@ -4,6 +4,8 @@ import ipaddress
 import tempfile
 import hashlib
 import datetime
+import math
+import time
 
 
 class IPsSaturatedError(Exception): pass
@@ -97,6 +99,7 @@ def new_client(name, ip, netmask, ccd=CCD):
 
     return parse_client(name, ccd=ccd)
 
+
 def delete_client(name, ccd=CCD):
     '''
     Delete a client file from the ccd directory.
@@ -106,6 +109,7 @@ def delete_client(name, ccd=CCD):
     config = os.path.join(ccd, name)
     os.remove(config) 
     return os.path.abspath(config)
+
 
 def parse_client(name, ccd=CCD):
     '''
@@ -161,12 +165,24 @@ def _try_lock_ccd(ccd=CCD):
 def wait_for_lock(ccd=CCD, timeout=10, wait=1):
     '''
     Wait up to timeout seconds to acheive a lock.
+    Recheck every wait seconds. 
+    timeout and wait may integers or floating point numbers.
+    Return lockfile if lock is acheived,
+    Otherwise return False.
     '''
+
+    ms = math.ceil(timeout * 1000)
+    timedelta = datetime.timedelta(milliseconds=ms)
+
     start_time = datetime.datetime.now()
     while True:
         lockfile = _try_lock_ccd(ccd=ccd)
         if lockfile:
             return lockfile
+        time.sleep(wait)
+        now = datetime.datetime.now()
+        if now - start_time > timedelta:
+            return False
 
 
 def remove_ccd_lock(lockfile):
