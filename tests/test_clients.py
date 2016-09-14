@@ -124,6 +124,27 @@ class NewClientTest(unittest.TestCase):
         rmtree(self.ccd)
 
 
+class DeleteClientTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+        os.makedirs(self.ccd)
+        self.name = 'dummy'
+        ip = '10.0.0.2'
+        netmask = '255.255.255.0'
+        clients.new_client(self.name, ip, netmask, self.ccd)
+
+    def testDeleteClient(self):
+        path = os.path.join(self.ccd, self.name)
+        expected = os.path.abspath(path)
+        result = clients.delete_client(self.name, ccd=self.ccd)
+        self.assertEqual(expected, result)
+        self.assertFalse(os.path.isfile(path))
+
+    def tearDown(self):
+        rmtree(self.ccd)
+
+
 class ParseClientTest(unittest.TestCase):
 
     def setUp(self):

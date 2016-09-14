@@ -92,6 +92,15 @@ def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
 
     return parse_client(name, ccd=ccd)
 
+def delete_client(name, ccd='/etc/openvpn/clients'):
+    """
+    Delete a client file from the ccd directory.
+    Return the full path of the file deleted on success.
+    Raise an exception on failure.
+    """
+    config = os.path.join(ccd, name)
+    os.remove(config) 
+    return os.path.abspath(config)
 
 def parse_client(name, ccd='/etc/openvpn/clients'):
     """
