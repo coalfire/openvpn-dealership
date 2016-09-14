@@ -13,24 +13,25 @@ class ParseServerTest(unittest.TestCase):
         self.conf = './tests/files/server.conf'
 
     def testNetmask(self):
-        result = clients.parse_server(self.conf)['netmask']
         expected = '255.255.255.0'
+        result = clients.parse_server(self.conf)['netmask']
         self.assertEqual(expected, result)
 
     def testIP(self):
-        result = clients.parse_server(self.conf)['ip']
         expected = '10.0.0.0'
+        result = clients.parse_server(self.conf)['ip']
         self.assertEqual(expected, result)
 
     def testCCD(self):
-        result = clients.parse_server(self.conf)['ccd']
         expected = '/etc/openvpn/clients'
+        result = clients.parse_server(self.conf)['ccd']
         self.assertEqual(expected, result)
 
     def testAddresses(self):
-        result = clients.parse_server(self.conf)['addresses']
         # 256 in a /24 minus the broadcast, network, and server addresses
         expected = 253
+
+        result = clients.parse_server(self.conf)['addresses']
         self.assertEqual(expected, len(result))
 
 
@@ -47,8 +48,8 @@ class UsedIPsTest(unittest.TestCase):
             clients.new_client(name, ip, netmask, self.ccd)
 
     def testUsedIPs(self):
-        result = clients.used_ips(self.ccd)
         expected = 10
+        result = clients.used_ips(self.ccd)
         self.assertEqual(expected, len(result))
 
     def tearDown(self):
@@ -104,6 +105,7 @@ class NewClientTest(unittest.TestCase):
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
+
         expected = {
             'name':    name,
             'ip':      ip,
@@ -137,6 +139,7 @@ class DeleteClientTest(unittest.TestCase):
 
     def testDeleteClient(self):
         path = os.path.join(self.ccd, self.name)
+
         expected = os.path.abspath(path)
         result = clients.delete_client(self.name, ccd=self.ccd)
 
@@ -164,12 +167,12 @@ class ParseClientTest(unittest.TestCase):
         self.name = 'dummy'
         clients.new_client(self.name, self.ip, self.netmask, ccd=self.ccd)
 
-        result = clients.parse_client(self.name, ccd=self.ccd)
         expected = {
             'name':    self.name,
             'ip':      self.ip,
             'netmask': self.netmask,
             }
+        result = clients.parse_client(self.name, ccd=self.ccd)
         self.assertEqual(expected, result)
 
     def testClientMissing(self):
@@ -197,10 +200,13 @@ class LockCCDTest(unittest.TestCase):
     def testPathHashing(self):
         abspath = os.path.abspath(self.ccd)
         path_components = abspath.split(os.sep)[1:]
+
         # for example: 'etc_openvpn_clients'
         underscored = '_'.join(path_components)
+
         # for example: '/etc_openvpn_clients'
         non_unique = os.sep + underscored 
+
         self.lockfile2 = clients.lock_ccd(ccd=non_unique)
         self.assertTrue(self.lockfile2)
 
