@@ -184,18 +184,18 @@ class ParseClientTest(unittest.TestCase):
         rmtree(self.ccd)
 
 
-class LockCCDTest(unittest.TestCase):
+class TryLockCCDTest(unittest.TestCase):
 
     def setUp(self):
         self.ccd = './tests/clients/ccd'
-        self.lockfile = clients.lock_ccd(ccd=self.ccd)
+        self.lockfile = clients._try_lock_ccd(ccd=self.ccd)
         self.lockfile2 = ''
 
-    def testLockCCD(self):
+    def testTryLockCCD(self):
         self.assertTrue(self.lockfile)
 
-    def testLockedLockCCD(self):
-        self.assertFalse(clients.lock_ccd(ccd=self.ccd))
+    def testTryLockedLockCCD(self):
+        self.assertFalse(clients._try_lock_ccd(ccd=self.ccd))
 
     def testPathHashing(self):
         abspath = os.path.abspath(self.ccd)
@@ -207,7 +207,7 @@ class LockCCDTest(unittest.TestCase):
         # for example: '/etc_openvpn_clients'
         non_unique = os.sep + underscored 
 
-        self.lockfile2 = clients.lock_ccd(ccd=non_unique)
+        self.lockfile2 = clients._try_lock_ccd(ccd=non_unique)
         self.assertTrue(self.lockfile2)
 
     def tearDown(self):
@@ -216,11 +216,24 @@ class LockCCDTest(unittest.TestCase):
             os.remove(self.lockfile2)
 
 
+class WaitForLockTest(unittest.TestCase):
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+        self.lockfile = ''
+
+    def testWaitForLock(self):
+        self.lockfile = clients.wait_for_lock(ccd=self.ccd, timeout=0, wait=0)
+        self.assertTrue(self.lockfile)
+    
+    def tearDown(self):
+        os.remove(self.lockfile)
+
+
 class RemoveCCDLockTest(unittest.TestCase):
 
     def setUp(self):
         self.ccd = './tests/clients/ccd'
-        self.lockfile = clients.lock_ccd(self.ccd)
+        self.lockfile = clients._try_lock_ccd(self.ccd)
         self.fakelockfile = './tests/files/nosuchlockfile'
 
     def testRemoveCCDLockTest(self):

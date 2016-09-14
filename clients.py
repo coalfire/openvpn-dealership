@@ -3,6 +3,7 @@ import re
 import ipaddress
 import tempfile
 import hashlib
+import datetime
 
 
 class IPsSaturatedError(Exception): pass
@@ -40,7 +41,9 @@ def parse_server(conf=SERVER):
 
     # for example: '192.168.1.0/255.255.255.0'
     cidr = '/'.join([ret['ip'], ret['netmask']])
+
     network = ipaddress.IPv4Network(cidr)
+
     # we slice off the first address since it is in use by the server
     ret['addresses'] = list(network.hosts())[1:]
 
@@ -66,7 +69,7 @@ def used_ips(ccd=CCD):
 def next_available_ip(conf=SERVER, ccd=CCD):
     '''
     Return a string representation of the next IP in the server's range
-    not in used by a client in the ccd directory.
+    not in use by a client in the ccd directory.
     '''
 
     config = parse_server(conf)
@@ -125,7 +128,7 @@ def parse_client(name, ccd=CCD):
     return {'name': name, 'ip': ip, 'netmask': netmask}
 
 
-def lock_ccd(ccd=CCD):
+def _try_lock_ccd(ccd=CCD):
     '''
     Create a ccd-specific lockfile.
     Return full path of lockfile if successful.
@@ -153,6 +156,17 @@ def lock_ccd(ccd=CCD):
         return lockfile
     except:
         return False
+
+
+def wait_for_lock(ccd=CCD, timeout=10, wait=1):
+    '''
+    Wait up to timeout seconds to acheive a lock.
+    '''
+    start_time = datetime.datetime.now()
+    while True:
+        lockfile = _try_lock_ccd(ccd=ccd)
+        if lockfile:
+            return lockfile
 
 
 def remove_ccd_lock(lockfile):
