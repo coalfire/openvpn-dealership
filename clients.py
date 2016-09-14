@@ -9,8 +9,10 @@ class IPsSaturatedError(Exception): pass
 
 class DuplicateClientError(Exception): pass
 
+SERVER = '/etc/openvpn/server.conf'
+CCD    = '/etc/openvpn/clients'
 
-def parse_server(conf='/etc/openvpn/server.conf'):
+def parse_server(conf=SERVER):
     """
     Return a dict of server info parsed from the server config file.
     """
@@ -44,7 +46,7 @@ def parse_server(conf='/etc/openvpn/server.conf'):
     return ret
 
 
-def used_ips(ccd='/etc/openvpn/clients'):
+def used_ips(ccd=CCD):
     """
     Return a list of ipaddress objects in use by clients in the ccd directory.
     """
@@ -60,8 +62,7 @@ def used_ips(ccd='/etc/openvpn/clients'):
     return ips_used
 
 
-def next_available_ip(conf='/etc/openvpn/server.conf',
-                      ccd='/etc/openvpn/clients'):
+def next_available_ip(conf=SERVER, ccd=CCD):
     """
     Return a string representation of the next IP in the server's range
     not in used by a client in the ccd directory.
@@ -77,7 +78,7 @@ def next_available_ip(conf='/etc/openvpn/server.conf',
     return sorted(remaining)[0].exploded
 
 
-def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
+def new_client(name, ip, netmask, ccd=CCD):
     """
     Create a new client file in the ccd directory.
     Return a dict of client information.
@@ -92,7 +93,7 @@ def new_client(name, ip, netmask, ccd='/etc/openvpn/clients'):
 
     return parse_client(name, ccd=ccd)
 
-def delete_client(name, ccd='/etc/openvpn/clients'):
+def delete_client(name, ccd=CCD):
     """
     Delete a client file from the ccd directory.
     Return the full path of the file deleted on success.
@@ -102,7 +103,7 @@ def delete_client(name, ccd='/etc/openvpn/clients'):
     os.remove(config) 
     return os.path.abspath(config)
 
-def parse_client(name, ccd='/etc/openvpn/clients'):
+def parse_client(name, ccd=CCD):
     """
     Return a dict of client information.
     """
@@ -123,7 +124,7 @@ def parse_client(name, ccd='/etc/openvpn/clients'):
     return {'name': name, 'ip': ip, 'netmask': netmask}
 
 
-def lock_ccd(ccd='/etc/openvpn/clients'):
+def lock_ccd(ccd=CCD):
     """
     Create a ccd-specific lockfile.
     Return full path of lockfile if successful.

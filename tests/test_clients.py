@@ -117,6 +117,7 @@ class NewClientTest(unittest.TestCase):
         netmask = '255.255.255.0'
         name = 'dummy'
         clients.new_client(name, ip, netmask, self.ccd)
+
         err = clients.DuplicateClientError
         self.assertRaises(err, clients.new_client, name, ip, netmask, self.ccd)
 
@@ -138,6 +139,7 @@ class DeleteClientTest(unittest.TestCase):
         path = os.path.join(self.ccd, self.name)
         expected = os.path.abspath(path)
         result = clients.delete_client(self.name, ccd=self.ccd)
+
         self.assertEqual(expected, result)
         self.assertFalse(os.path.isfile(path))
 
