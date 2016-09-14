@@ -132,6 +132,12 @@ def parse_client(name, ccd=CCD):
     return {'name': name, 'ip': ip, 'netmask': netmask}
 
 
+def lock(func):
+    def locker(*args):
+        pass
+    pass
+
+
 def _try_lock_ccd(ccd=CCD):
     '''
     Create a ccd-specific lockfile.
@@ -197,3 +203,5 @@ def remove_ccd_lock(lockfile):
         return lockfile
     except:
         raise
+
+

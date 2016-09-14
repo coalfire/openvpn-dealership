@@ -183,6 +183,10 @@ class ParseClientTest(unittest.TestCase):
     def tearDown(self):
         rmtree(self.ccd)
 
+class LockTest(unittest.TestCase):
+
+    def testLock(self):
+        self.assertTrue(False)
 
 class TryLockCCDTest(unittest.TestCase):
 
