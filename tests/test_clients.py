@@ -185,17 +185,29 @@ class LockCCDTest(unittest.TestCase):
 
     def setUp(self):
         self.ccd = './tests/clients/ccd'
-        self.lockfile = clients.lock_ccd(self.ccd)
+        self.lockfile = clients.lock_ccd(ccd=self.ccd)
+        self.lockfile2 = ''
 
     def testLockCCD(self):
         self.assertTrue(self.lockfile)
 
     def testLockedLockCCD(self):
-        self.assertFalse(clients.lock_ccd(self.ccd))
+        self.assertFalse(clients.lock_ccd(ccd=self.ccd))
+
+    def testNonUniqueCCD(self):
+        abspath = os.path.abspath(self.ccd)
+        path_components = abspath.split(os.sep)[1:]
+        # for example: 'etc_openvpn_clients'
+        underscored = '_'.join(path_components)
+        # for example: '/etc_openvpn_clients'
+        non_unique = os.sep + underscored 
+        self.lockfile2 = clients.lock_ccd(ccd=non_unique)
+        self.assertTrue(self.lockfile2)
 
     def tearDown(self):
-        if self.lockfile:
-            os.remove(self.lockfile)
+        os.remove(self.lockfile)
+        if self.lockfile2:
+            os.remove(self.lockfile2)
 
 
 class RemoveCCDLockTest(unittest.TestCase):
@@ -203,7 +215,6 @@ class RemoveCCDLockTest(unittest.TestCase):
     def setUp(self):
         self.ccd = './tests/clients/ccd'
         self.lockfile = clients.lock_ccd(self.ccd)
-        print(self.lockfile)
         self.fakelockfile = './tests/files/nosuchlockfile'
 
     def testRemoveCCDLockTest(self):
@@ -216,6 +227,7 @@ class RemoveCCDLockTest(unittest.TestCase):
             os.remove(self.lockfile)
         except OSError:
             pass
+
 
 if __name__ == '__main__':
     unittest.main

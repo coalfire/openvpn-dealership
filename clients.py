@@ -2,6 +2,7 @@ import os
 import re
 import ipaddress
 import tempfile
+import hashlib
 
 
 class IPsSaturatedError(Exception): pass
@@ -13,9 +14,9 @@ SERVER = '/etc/openvpn/server.conf'
 CCD    = '/etc/openvpn/clients'
 
 def parse_server(conf=SERVER):
-    """
+    '''
     Return a dict of server info parsed from the server config file.
-    """
+    '''
 
     # for example:
     # server 192.168.1.0 255.255.255.0
@@ -47,9 +48,9 @@ def parse_server(conf=SERVER):
 
 
 def used_ips(ccd=CCD):
-    """
+    '''
     Return a list of ipaddress objects in use by clients in the ccd directory.
-    """
+    '''
 
     ips_used = []
 
@@ -63,10 +64,10 @@ def used_ips(ccd=CCD):
 
 
 def next_available_ip(conf=SERVER, ccd=CCD):
-    """
+    '''
     Return a string representation of the next IP in the server's range
     not in used by a client in the ccd directory.
-    """
+    '''
 
     config = parse_server(conf)
     addresses = set(config['addresses'])
@@ -79,10 +80,10 @@ def next_available_ip(conf=SERVER, ccd=CCD):
 
 
 def new_client(name, ip, netmask, ccd=CCD):
-    """
+    '''
     Create a new client file in the ccd directory.
     Return a dict of client information.
-    """
+    '''
 
     ifconfig = 'ifconfig_push {0} {1}'.format(ip, netmask)
     config = os.path.join(ccd, name)
@@ -94,19 +95,19 @@ def new_client(name, ip, netmask, ccd=CCD):
     return parse_client(name, ccd=ccd)
 
 def delete_client(name, ccd=CCD):
-    """
+    '''
     Delete a client file from the ccd directory.
     Return the full path of the file deleted on success.
     Raise an exception on failure.
-    """
+    '''
     config = os.path.join(ccd, name)
     os.remove(config) 
     return os.path.abspath(config)
 
 def parse_client(name, ccd=CCD):
-    """
+    '''
     Return a dict of client information.
-    """
+    '''
 
     config = os.path.join(ccd, name)
 
@@ -125,18 +126,24 @@ def parse_client(name, ccd=CCD):
 
 
 def lock_ccd(ccd=CCD):
-    """
+    '''
     Create a ccd-specific lockfile.
     Return full path of lockfile if successful.
     Return False if lockfile already exists.
-    """
+    '''
 
     tmpdir = tempfile.gettempdir()
     lockdir = os.path.join(tmpdir, 'vpn-dealer')
     os.makedirs(lockdir, exist_ok=True)
-
     abspath = os.path.abspath(ccd)
-    fn = abspath.replace('/', '_')
+    under = abspath.replace('/', '_')
+    
+    # Our lockfile is named by replacing the CCD's '/' with '_'.
+    # Conceivably, a CCD with underscores in the path could clobber another.
+    # We add a hash to the lockfile name to enforce uniqueness.
+    digest = hashlib.sha256(abspath.encode()).hexdigest()
+    fn = under + digest
+
     lockfile = os.path.join(lockdir, fn)
     pid = str(os.getpid())
 
@@ -149,13 +156,12 @@ def lock_ccd(ccd=CCD):
 
 
 def remove_ccd_lock(lockfile):
-    """
+    '''
     Remove the specified lockfile.
     Return the full path of the lockfile if successul.
     Raise an exception if not successfile.
-    """
+    '''
 
-    print(lockfile)
     try:
         os.remove(lockfile)
         return lockfile
