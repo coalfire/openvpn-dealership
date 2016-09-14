@@ -141,6 +141,11 @@ class DeleteClientTest(unittest.TestCase):
         self.assertEqual(expected, result)
         self.assertFalse(os.path.isfile(path))
 
+    def testClientMissing(self):
+        name = 'does_not_exist'
+        err = FileNotFoundError
+        self.assertRaises(err, clients.delete_client, name, self.ccd)
+
     def tearDown(self):
         rmtree(self.ccd)
 
