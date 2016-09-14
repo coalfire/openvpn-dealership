@@ -194,7 +194,7 @@ class LockCCDTest(unittest.TestCase):
     def testLockedLockCCD(self):
         self.assertFalse(clients.lock_ccd(ccd=self.ccd))
 
-    def testNonUniqueCCD(self):
+    def testPathHashing(self):
         abspath = os.path.abspath(self.ccd)
         path_components = abspath.split(os.sep)[1:]
         # for example: 'etc_openvpn_clients'
