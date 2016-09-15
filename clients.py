@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import re
 import ipaddress
@@ -7,6 +9,7 @@ import datetime
 import math
 import time
 import functools
+import argparse
 
 class IPsSaturatedError(Exception): pass
 
@@ -262,4 +265,35 @@ def _unlock_ccd(lockfile):
     except:
         raise
 
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+    
+    parser_new = subparsers.add_parser('new', help='add a new client')
+    parser_new.add_argument(
+        'NAME',
+        help='Name of the client',
+        action='store',
+        )
+
+    parser_delete = subparsers.add_parser('delete', help='delete a client')
+    parser_delete.add_argument(
+        'NAME',
+        help='Name of the client',
+        action='store',
+        )
+
+    parser_display = subparsers.add_parser('display', help='display a client')
+    parser_display.add_argument(
+        'NAME',
+        help='Name of the client',
+        action='store',
+        )
+
+    args = parser.parse_args()
+    print(str(args))
+    print(str(args))
+
+if __name__ == '__main__':
+    main()
 
