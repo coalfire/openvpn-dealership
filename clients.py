@@ -139,6 +139,7 @@ def new_client(name, server=SERVER, ccd=None):
     else:
         conf = get_new_conf(server)
     ip = conf['ip']
+
     netmask = conf['netmask']
     if not ccd:
         ccd = conf['ccd']
