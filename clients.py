@@ -84,7 +84,7 @@ def next_available_ip(conf=SERVER, ccd=CCD):
     return sorted(remaining)[0].exploded
 
 
-def new_client(name, ip, netmask, ccd=CCD):
+def _new_client(name, ip, netmask, ccd=CCD):
     '''
     Create a new client file in the ccd directory.
     Return a dict of client information.
@@ -147,12 +147,12 @@ def lock(func):
         ccd = wait_kwargs.get('ccd', CCD)
         timeout = wait_kwargs.get('timeout', 10)
         wait = wait_kwargs.get('wait', 1)
-        lockfile = _wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
+        lockfile = __wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
 
         try:
             result = func(*args, **kwargs)
         finally:
-            _remove_ccd_lock(lockfile)
+            __remove_ccd_lock(lockfile)
 
         return results
 
@@ -189,7 +189,7 @@ def _try_lock_ccd(ccd=CCD):
         return False
 
 
-def wait_for_lock(ccd=CCD, timeout=10, wait=1):
+def _wait_for_lock(ccd=CCD, timeout=10, wait=1):
     '''
     Wait up to timeout seconds to acheive a lock.
     Recheck every wait seconds. 
@@ -212,7 +212,7 @@ def wait_for_lock(ccd=CCD, timeout=10, wait=1):
             return False
 
 
-def remove_ccd_lock(lockfile):
+def _remove_ccd_lock(lockfile):
     '''
     Remove the specified lockfile.
     Return the full path of the lockfile if successul.
