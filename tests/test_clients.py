@@ -45,7 +45,7 @@ class UsedIPsTest(unittest.TestCase):
             s = str(i)
             name = 'client' + s
             ip = '192.168.1.' + s
-            clients._new_client(name, ip, netmask, self.ccd)
+            clients._write_client(name, ip, netmask, self.ccd)
 
     def testUsedIPs(self):
         expected = 10
@@ -74,8 +74,8 @@ class NextAvailableIPTest(unittest.TestCase):
             s = str(i)
             name = 'client' + s
             ip = '10.0.0.' + s
-            clients._new_client(name, ip, self.netmask, self.ccd)
-        clients._new_client('client1', '10.0.0.129', self.netmask, self.ccd)
+            clients._write_client(name, ip, self.netmask, self.ccd)
+        clients._write_client('client1', '10.0.0.129', self.netmask, self.ccd)
 
         expected = '10.0.0.13'
         result = clients.next_available_ip(self.conf, self.ccd)
@@ -86,7 +86,7 @@ class NextAvailableIPTest(unittest.TestCase):
             s = str(i)
             name = 'client' + s
             ip = '10.0.0.' + s
-            clients._new_client(name, ip, self.netmask, self.ccd)
+            clients._write_client(name, ip, self.netmask, self.ccd)
 
         err = clients.IPsSaturatedError
         self.assertRaises(err, clients.next_available_ip, self.conf, self.ccd)
@@ -111,17 +111,17 @@ class NewClientTest(unittest.TestCase):
             'ip':      ip,
             'netmask': netmask,
             }
-        result = clients._new_client(name, ip, netmask, ccd=self.ccd)
+        result = clients._write_client(name, ip, netmask, ccd=self.ccd)
         self.assertEqual(expected, result)
 
     def testDupClient(self):
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
-        clients._new_client(name, ip, netmask, self.ccd)
+        clients._write_client(name, ip, netmask, self.ccd)
 
         err = clients.DuplicateClientError
-        self.assertRaises(err, clients._new_client, name, ip, netmask, self.ccd)
+        self.assertRaises(err, clients._write_client, name, ip, netmask, self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)
@@ -135,7 +135,7 @@ class DeleteClientTest(unittest.TestCase):
         self.name = 'dummy'
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
-        clients._new_client(self.name, ip, netmask, self.ccd)
+        clients._write_client(self.name, ip, netmask, self.ccd)
 
     def testDeleteClient(self):
         path = os.path.join(self.ccd, self.name)
@@ -165,7 +165,7 @@ class ParseClientTest(unittest.TestCase):
         self.ip = '10.0.0.2'
         self.netmask = '255.255.255.0'
         self.name = 'dummy'
-        clients._new_client(self.name, self.ip, self.netmask, ccd=self.ccd)
+        clients._write_client(self.name, self.ip, self.netmask, ccd=self.ccd)
 
         expected = {
             'name':    self.name,

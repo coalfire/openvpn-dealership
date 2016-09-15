@@ -6,7 +6,7 @@ import hashlib
 import datetime
 import math
 import time
-
+import functools
 
 class IPsSaturatedError(Exception): pass
 
@@ -15,6 +15,34 @@ class DuplicateClientError(Exception): pass
 
 SERVER = '/etc/openvpn/server.conf'
 CCD    = '/etc/openvpn/clients'
+
+
+def lock(func):
+    '''
+    Return a decorated function
+    which locks before running
+    and unlocks after running.
+    '''
+
+    @functools.wraps(func)
+    def decorated(*args, **kwargs):
+        wait_kwargs = {}
+        if kwargs:
+            wait_kwargs = kwargs
+        ccd = wait_kwargs.get('ccd', CCD)
+        timeout = wait_kwargs.get('timeout', 5)
+        wait = wait_kwargs.get('wait', 1)
+        lockfile = _wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
+
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            _remove_ccd_lock(lockfile)
+
+        return result
+
+    return decorated
+
 
 def parse_server(conf=SERVER):
     '''
@@ -84,7 +112,7 @@ def next_available_ip(conf=SERVER, ccd=CCD):
     return sorted(remaining)[0].exploded
 
 
-def _new_client(name, ip, netmask, ccd=CCD):
+def _write_client(name, ip, netmask, ccd=CCD):
     '''
     Create a new client file in the ccd directory.
     Return a dict of client information.
@@ -100,6 +128,7 @@ def _new_client(name, ip, netmask, ccd=CCD):
     return parse_client(name, ccd=ccd)
 
 
+@lock
 def delete_client(name, ccd=CCD):
     '''
     Delete a client file from the ccd directory.
@@ -130,33 +159,6 @@ def parse_client(name, ccd=CCD):
                 netmask = match.group('netmask')
 
     return {'name': name, 'ip': ip, 'netmask': netmask}
-
-
-def lock(func):
-    '''
-    Return a decorated function
-    which locks before running
-    and unlocks after running.
-    '''
-
-    @functools.wraps(func)
-    def decorated(*args, **kwargs):
-        wait_kwargs = {}
-        if kwargs:
-            wait_kwargs = kwargs
-        ccd = wait_kwargs.get('ccd', CCD)
-        timeout = wait_kwargs.get('timeout', 10)
-        wait = wait_kwargs.get('wait', 1)
-        lockfile = __wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
-
-        try:
-            result = func(*args, **kwargs)
-        finally:
-            __remove_ccd_lock(lockfile)
-
-        return results
-
-    return decorated
 
 
 def _try_lock_ccd(ccd=CCD):
