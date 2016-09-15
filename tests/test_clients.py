@@ -285,5 +285,16 @@ class RemoveCCDLockTest(unittest.TestCase):
             pass
 
 
+class DisplayClientTest(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def testDisplayClient(self):
+        self.assertTrue(False)
+
+    def tearDown(self):
+        pass
+
 if __name__ == '__main__':
     unittest.main
