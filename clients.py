@@ -276,12 +276,23 @@ def main():
     parser.add_argument(
         '-s',
         '--server',
-        help='Use the server config SERVER. Default to /etc/openvpn/server.conf',
+        help='Use the server config SERVER. Default to {0}.'.format(SERVER),
         default=SERVER,
         action='store',
         )
     args = parser.parse_args()
-    print(str(args))
+    
+    actions = {'new': new_client,
+               'delete': delete_client,
+               'display': display_client,
+               }
+
+    client = args['client']
+    server = args['server']
+    action = args['action']
+    actions['action'](client, server=server)
+
+    
 
 if __name__ == '__main__':
     main()
