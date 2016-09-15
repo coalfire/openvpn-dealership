@@ -96,25 +96,33 @@ def used_ips(ccd=CCD):
     return ips_used
 
 
-def next_available_ip(conf=SERVER, ccd=None):
+def get_new_conf(server=SERVER, ccd=None):
     '''
-    Return a string representation of the next IP in the server's range
-    not in use by a client in the ccd directory.
-    We only allow passing in the ccd for testing purposes - you really 
-    shouldn't use that flag.
+    Return a dict of next available IP, netmask, and ccd 
+    for the server in question.
+    We only allow passing in the ccd for testing purposes 
+    - you really shouldn't use that parameter.
     '''
 
-    config = parse_server(conf)
-    addresses = set(config['addresses'])
+    result = {}
+
+    server_dict = parse_server(server)
+    addresses = set(server_dict['addresses'])
+    if not ccd: 
+        ccd = server_dict['ccd']
     ips_in_use = set(used_ips(ccd))
     
-    if not ccd: 
-        ccd = config['ccd']
 
     remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
         raise IPsSaturatedError
-    return sorted(remaining)[0].exploded
+
+    result['ip']      = sorted(remaining)[0].exploded
+
+    result['netmask'] = server_dict['netmask']
+    result['ccd']     = server_dict['ccd']
+
+    return result
 
 
 def new_client(name, server=SERVER):

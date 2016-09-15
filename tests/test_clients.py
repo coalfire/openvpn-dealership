@@ -56,17 +56,21 @@ class UsedIPsTest(unittest.TestCase):
         rmtree(self.ccd)
 
 
-class NextAvailableIPTest(unittest.TestCase):
+class GetNewConfTest(unittest.TestCase):
     
     def setUp(self):
         self.ccd = './tests/files/ccd_empty'
         os.makedirs(self.ccd)
-        self.conf = './tests/files/server.conf'
-        self.netmask = clients.parse_server(self.conf)['netmask']
+        self.server = './tests/files/server.conf'
+        self.netmask = clients.parse_server(self.server)['netmask']
 
     def testThereAreNoClients(self):
-        expected = '10.0.0.2'
-        result = clients.next_available_ip(conf=self.conf, ccd=self.ccd)
+        expected = {
+                'ip': '10.0.0.2',
+                'netmask': '255.255.255.0',
+                'ccd': '/etc/openvpn/clients',
+                }
+        result = clients.get_new_conf(server=self.server, ccd=self.ccd)
         self.assertEqual(expected, result)
 
     def testClientsHaveAnOpening(self):
@@ -77,8 +81,12 @@ class NextAvailableIPTest(unittest.TestCase):
             clients._write_client(name, ip, self.netmask, self.ccd)
         clients._write_client('client1', '10.0.0.129', self.netmask, self.ccd)
 
-        expected = '10.0.0.13'
-        result = clients.next_available_ip(self.conf, self.ccd)
+        expected = {
+                'ip': '10.0.0.13',
+                'netmask': '255.255.255.0',
+                'ccd': '/etc/openvpn/clients',
+                }
+        result = clients.get_new_conf(server=self.server, ccd=self.ccd)
         self.assertEqual(expected, result)
 
     def testNoIPsAvailable(self):
@@ -89,7 +97,10 @@ class NextAvailableIPTest(unittest.TestCase):
             clients._write_client(name, ip, self.netmask, self.ccd)
 
         err = clients.IPsSaturatedError
-        self.assertRaises(err, clients.next_available_ip, self.conf, self.ccd)
+        self.assertRaises(err,
+                          clients.get_new_conf,
+                          server=self.server,
+                          ccd=self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)
