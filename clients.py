@@ -26,18 +26,18 @@ def lock(func):
 
     @functools.wraps(func)
     def decorated(*args, **kwargs):
-        wait_kwargs = {}
+        lock_kwargs = {}
         if kwargs:
-            wait_kwargs = kwargs
-        ccd = wait_kwargs.get('ccd', CCD)
-        timeout = wait_kwargs.get('timeout', 5)
-        wait = wait_kwargs.get('wait', 1)
+            lock_kwargs = kwargs
+        ccd = lock_kwargs.get('ccd', CCD)
+        timeout = lock_kwargs.get('timeout', 5)
+        wait = lock_kwargs.get('wait', 1)
         lockfile = _wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
 
         try:
             result = func(*args, **kwargs)
         finally:
-            _remove_ccd_lock(lockfile)
+            _unlock_ccd(lockfile)
 
         return result
 
@@ -110,6 +110,15 @@ def next_available_ip(conf=SERVER, ccd=CCD):
     if len(remaining) == 0:
         raise IPsSaturatedError
     return sorted(remaining)[0].exploded
+
+
+def new_client(name, server=SERVER):
+    '''
+    Create a new client, automagically figuring out the correct network info.
+    Return a dict of the client information
+    '''
+
+    pass
 
 
 def _write_client(name, ip, netmask, ccd=CCD):
@@ -214,7 +223,7 @@ def _wait_for_lock(ccd=CCD, timeout=10, wait=1):
             return False
 
 
-def _remove_ccd_lock(lockfile):
+def _unlock_ccd(lockfile):
     '''
     Remove the specified lockfile.
     Return the full path of the lockfile if successul.

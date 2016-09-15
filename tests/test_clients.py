@@ -100,8 +100,30 @@ class NewClientTest(unittest.TestCase):
     def setUp(self):
         self.ccd = './tests/clients/ccd'
         os.makedirs(self.ccd)
+        self.server = './tests/files/server.conf'
 
-    def testNewClient(self):
+    def testNewClientTest(self):
+        name = 'dummy'
+
+        expected = {
+            'name':    name,
+            'ip':      '10.0.0.2',
+            'netmask': '255.255.255.0',
+            }
+        result = clients.new_client(name, server=self.server)
+        self.assertEqual(expected, result)
+
+    def tearDown(self):
+        rmtree(self.ccd)
+
+
+class WriteClientTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ccd = './tests/clients/ccd'
+        os.makedirs(self.ccd)
+
+    def testWriteClient(self):
         ip = '10.0.0.2'
         netmask = '255.255.255.0'
         name = 'dummy'
@@ -242,7 +264,7 @@ class RemoveCCDLockTest(unittest.TestCase):
 
     def testRemoveCCDLockTest(self):
         expected = self.lockfile
-        result = clients._remove_ccd_lock(self.lockfile)
+        result = clients._unlock_ccd(self.lockfile)
         self.assertEqual(expected, result)
 
     def tearDown(self):
