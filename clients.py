@@ -96,15 +96,20 @@ def used_ips(ccd=CCD):
     return ips_used
 
 
-def next_available_ip(conf=SERVER, ccd=CCD):
+def next_available_ip(conf=SERVER, ccd=None):
     '''
     Return a string representation of the next IP in the server's range
     not in use by a client in the ccd directory.
+    We only allow passing in the ccd for testing purposes - you really 
+    shouldn't use that flag.
     '''
 
     config = parse_server(conf)
     addresses = set(config['addresses'])
     ips_in_use = set(used_ips(ccd))
+    
+    if not ccd: 
+        ccd = config['ccd']
 
     remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
