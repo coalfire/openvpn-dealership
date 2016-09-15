@@ -267,31 +267,14 @@ def _unlock_ccd(lockfile):
 
 def main():
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
-    
-    parser_new = subparsers.add_parser('new', help='add a new client')
-    parser_new.add_argument(
-        'NAME',
-        help='Name of the client',
-        action='store',
-        )
 
-    parser_delete = subparsers.add_parser('delete', help='delete a client')
-    parser_delete.add_argument(
-        'NAME',
-        help='Name of the client',
-        action='store',
-        )
-
-    parser_display = subparsers.add_parser('display', help='display a client')
-    parser_display.add_argument(
-        'NAME',
-        help='Name of the client',
-        action='store',
+    parser.add_argument('OPERATION', choices=['new', 'delete', 'display'])
+    parser.add_argument(
+        'CLIENT',
+        help='Name of the client to act upon',
         )
 
     args = parser.parse_args()
-    print(str(args))
     print(str(args))
 
 if __name__ == '__main__':
