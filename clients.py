@@ -125,6 +125,7 @@ def get_new_conf(server=SERVER, ccd=None):
     return result
 
 
+@lock
 def new_client(name, server=SERVER, ccd=None):
     '''
     Create a new client, automagically figuring out the correct network info.
