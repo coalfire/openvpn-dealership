@@ -268,12 +268,18 @@ def _unlock_ccd(lockfile):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('OPERATION', choices=['new', 'delete', 'display'])
+    parser.add_argument('action', choices=['new', 'delete', 'display'])
     parser.add_argument(
-        'CLIENT',
+        'client',
         help='Name of the client to act upon',
         )
-
+    parser.add_argument(
+        '-s',
+        '--server',
+        help='Use the server config SERVER. Default to /etc/openvpn/server.conf',
+        default=SERVER,
+        action='store',
+        )
     args = parser.parse_args()
     print(str(args))
 
