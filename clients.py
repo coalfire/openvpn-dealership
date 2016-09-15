@@ -133,9 +133,30 @@ def parse_client(name, ccd=CCD):
 
 
 def lock(func):
-    def locker(*args):
-        pass
-    pass
+    '''
+    Return a decorated function
+    which locks before running
+    and unlocks after running.
+    '''
+
+    @functools.wraps(func)
+    def decorated(*args, **kwargs):
+        wait_kwargs = {}
+        if kwargs:
+            wait_kwargs = kwargs
+        ccd = wait_kwargs.get('ccd', CCD)
+        timeout = wait_kwargs.get('timeout', 10)
+        wait = wait_kwargs.get('wait', 1)
+        lockfile = _wait_for_lock(ccd=ccd, timeout=timeout, wait=wait)
+
+        try:
+            result = func(*args, **kwargs)
+        finally:
+            _remove_ccd_lock(lockfile)
+
+        return results
+
+    return decorated
 
 
 def _try_lock_ccd(ccd=CCD):
