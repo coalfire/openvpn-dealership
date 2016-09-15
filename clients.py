@@ -125,13 +125,24 @@ def get_new_conf(server=SERVER, ccd=None):
     return result
 
 
-def new_client(name, server=SERVER):
+def new_client(name, server=SERVER, ccd=None):
     '''
     Create a new client, automagically figuring out the correct network info.
-    Return a dict of the client information
+    Return a dict of the client information.
+    The ccd parameter is for testing purposes only.
     '''
 
-    pass
+    conf = {}
+    if ccd:
+        conf = get_new_conf(server, ccd=ccd)
+    else:
+        conf = get_new_conf(server)
+    ip = conf['ip']
+    netmask = conf['netmask']
+    if not ccd:
+        ccd = conf['ccd']
+
+    return _write_client(name, ip, netmask, ccd)
 
 
 def _write_client(name, ip, netmask, ccd=CCD):

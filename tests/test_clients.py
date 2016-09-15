@@ -121,7 +121,7 @@ class NewClientTest(unittest.TestCase):
             'ip':      '10.0.0.2',
             'netmask': '255.255.255.0',
             }
-        result = clients.new_client(name, server=self.server)
+        result = clients.new_client(name, server=self.server, ccd=self.ccd)
         self.assertEqual(expected, result)
 
     def tearDown(self):
