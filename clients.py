@@ -156,7 +156,7 @@ def _write_client(name, ip, netmask, ccd=CCD):
     Return a dict of client information.
     '''
 
-    ifconfig = 'ifconfig_push {0} {1}'.format(ip, netmask)
+    ifconfig = 'ifconfig-push {0} {1}'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
         raise DuplicateClientError
@@ -186,8 +186,8 @@ def parse_client(name, ccd=CCD):
     config = os.path.join(ccd, name)
 
     # for example:
-    # ifconfig_push 192.168.1.2 255.255.255.0
-    r = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
+    # ifconfig-push 192.168.1.2 255.255.255.0
+    r = re.compile(r'^ifconfig-push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
 
     ip = netmask = ''
 
