@@ -25,15 +25,15 @@ class IPsSaturatedError(VPNDealerError):
     '''
 
     def __init__(self, message):
-        self.message = 'No IPs left in ' + message 
+        self.message = message
 
 class DuplicateClientError(VPNDealerError):
     '''
-    Client name already in Use 
+    Client name already in use.
     '''
 
     def __init__(self, message):
-        self.message = message + ' already in use.'
+        self.message = message
 
 
 SERVER = '/etc/openvpn/server.conf'
@@ -138,7 +138,7 @@ def get_new_conf(server=SERVER, ccd=None):
 
     remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
-        raise IPsSaturatedError(server_dict['netmask'])
+        raise IPsSaturatedError(server_dict['netmask'] + 'has no IPs available')
 
     result['ip']      = sorted(remaining)[0].exploded
 
@@ -179,7 +179,7 @@ def _write_client(name, ip, netmask, ccd=CCD):
     ifconfig = 'ifconfig-push {0} {1}\n'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
-        raise DuplicateClientError(name)
+        raise DuplicateClientError(name + 'is already in use')
     with open(config, 'w') as f:
         f.write(ifconfig)
 
