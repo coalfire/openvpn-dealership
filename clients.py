@@ -156,7 +156,7 @@ def _write_client(name, ip, netmask, ccd=CCD):
     Return a dict of client information.
     '''
 
-    ifconfig = 'ifconfig-push {0} {1}'.format(ip, netmask)
+    ifconfig = 'ifconfig-push {0} {1}\n'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
         raise DuplicateClientError
