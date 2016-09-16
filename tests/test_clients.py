@@ -285,6 +285,7 @@ class RemoveCCDLockTest(unittest.TestCase):
             pass
 
 
+@unittest.skip("Not implemented yet")
 class DisplayClientTest(unittest.TestCase):
 
     def setUp(self):
