@@ -19,6 +19,7 @@ class VPNDealerError(Exception):
 
     pass
 
+
 class IPsSaturatedError(VPNDealerError):
     '''
     No IPs are available in this netmask.
@@ -26,6 +27,7 @@ class IPsSaturatedError(VPNDealerError):
 
     def __init__(self, message):
         self.message = message
+
 
 class DuplicateClientError(VPNDealerError):
     '''
@@ -121,9 +123,9 @@ def used_ips(ccd=CCD):
 
 def get_new_conf(server=SERVER, ccd=None):
     '''
-    Return a dict of next available IP, netmask, and ccd 
+    Return a dict of next available IP, netmask, and ccd
     for the server in question.
-    We only allow passing in the ccd for testing purposes 
+    We only allow passing in the ccd for testing purposes
     - you really shouldn't use that parameter.
     '''
 
@@ -133,7 +135,6 @@ def get_new_conf(server=SERVER, ccd=None):
     addresses = set(server_dict['addresses'])
     ccd = ccd or server_dict['ccd']
     ips_in_use = set(used_ips(ccd))
-    
 
     remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
@@ -194,9 +195,9 @@ def delete_client(name, server=SERVER, ccd=None):
     '''
 
     ccd = ccd or parse_server(server)['ccd']
-    
+
     config = os.path.join(ccd, name)
-    os.remove(config) 
+    os.remove(config)
     return os.path.abspath(config)
 
 
@@ -236,7 +237,7 @@ def _try_lock_ccd(ccd=CCD):
     os.makedirs(lockdir, exist_ok=True)
     abspath = os.path.abspath(ccd)
     under = abspath.replace('/', '_')
-    
+
     # Our lockfile is named by replacing the CCD's '/' with '_'.
     # Conceivably, a CCD with underscores in the path could clobber another.
     # We add a hash to the lockfile name to enforce uniqueness.
@@ -257,7 +258,7 @@ def _try_lock_ccd(ccd=CCD):
 def _wait_for_lock(ccd=CCD, timeout=10, wait=1):
     '''
     Wait up to timeout seconds to acheive a lock.
-    Recheck every wait seconds. 
+    Recheck every wait seconds.
     timeout and wait may integers or floating point numbers.
     Return lockfile if lock is acheived,
     Otherwise return False.
@@ -290,6 +291,7 @@ def _unlock_ccd(lockfile):
     except:
         raise
 
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -306,7 +308,7 @@ def main():
         action='store',
         )
     args = parser.parse_args()
-    
+
     actions = {'new': new_client,
                'delete': delete_client,
                'display': parse_client,
@@ -319,8 +321,6 @@ def main():
     output = actions[action](client, server=server)
     print(str(output))
 
-    
 
 if __name__ == '__main__':
     main()
-

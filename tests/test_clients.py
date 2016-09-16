@@ -57,7 +57,7 @@ class UsedIPsTest(unittest.TestCase):
 
 
 class GetNewConfTest(unittest.TestCase):
-    
+
     def setUp(self):
         self.ccd = './tests/files/ccd_empty'
         os.makedirs(self.ccd)
@@ -66,10 +66,10 @@ class GetNewConfTest(unittest.TestCase):
 
     def testThereAreNoClients(self):
         expected = {
-                'ip': '10.0.0.2',
-                'netmask': '255.255.255.0',
-                'ccd': '/etc/openvpn/clients',
-                }
+            'ip': '10.0.0.2',
+            'netmask': '255.255.255.0',
+            'ccd': '/etc/openvpn/clients',
+            }
         result = clients.get_new_conf(server=self.server, ccd=self.ccd)
         self.assertEqual(expected, result)
 
@@ -82,10 +82,10 @@ class GetNewConfTest(unittest.TestCase):
         clients._write_client('client1', '10.0.0.129', self.netmask, self.ccd)
 
         expected = {
-                'ip': '10.0.0.13',
-                'netmask': '255.255.255.0',
-                'ccd': '/etc/openvpn/clients',
-                }
+            'ip': '10.0.0.13',
+            'netmask': '255.255.255.0',
+            'ccd': '/etc/openvpn/clients',
+            }
         result = clients.get_new_conf(server=self.server, ccd=self.ccd)
         self.assertEqual(expected, result)
 
@@ -154,7 +154,13 @@ class WriteClientTest(unittest.TestCase):
         clients._write_client(name, ip, netmask, self.ccd)
 
         err = clients.DuplicateClientError
-        self.assertRaises(err, clients._write_client, name, ip, netmask, self.ccd)
+        self.assertRaises(err,
+                          clients.
+                          _write_client,
+                          name,
+                          ip,
+                          netmask,
+                          self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)
@@ -238,7 +244,7 @@ class TryLockCCDTest(unittest.TestCase):
         underscored = '_'.join(path_components)
 
         # for example: '/etc_openvpn_clients'
-        non_unique = os.sep + underscored 
+        non_unique = os.sep + underscored
 
         self.lockfile2 = clients._try_lock_ccd(ccd=non_unique)
         self.assertTrue(self.lockfile2)
@@ -255,12 +261,17 @@ class WaitForLockTest(unittest.TestCase):
         self.lockfile = ''
 
     def testNotLocked(self):
-        self.lockfile = clients._wait_for_lock(ccd=self.ccd, timeout=1, wait=0.5)
+        self.lockfile = clients._wait_for_lock(
+            ccd=self.ccd,
+            timeout=1,
+            wait=0.5)
         self.assertTrue(self.lockfile)
-    
+
     def testTimeoutLocked(self):
         self.lockfile = clients._try_lock_ccd(ccd=self.ccd)
-        self.assertFalse(clients._wait_for_lock(ccd=self.ccd, timeout=0.1, wait=0.1))
+        self.assertFalse(clients._wait_for_lock(ccd=self.ccd,
+                                                timeout=0.1,
+                                                wait=0.1))
 
     def tearDown(self):
         os.remove(self.lockfile)
@@ -285,6 +296,5 @@ class RemoveCCDLockTest(unittest.TestCase):
             pass
 
 
-
 if __name__ == '__main__':
-    unittest.main
+    unittest.main()
