@@ -1,7 +1,13 @@
-FILES = clients.py tests/test_clients.py
+PREFIX = /usr/local
+PROG = vpn-dealer
+SRC = clients.py
+FILES = ${SRC} tests/test_clients.py
 
 test: 
 	nosetests --rednose
+
+verbose-test: 
+	nosetests --verbose --rednose
 
 lint: pylint pep8
 
@@ -11,4 +17,9 @@ pylint:
 pep8: 
 	-$@ ${FILES} | less
 
-.PHONY: test pylint pep8 lint
+install:
+	mkdir -p ${DESTDIR}${PREFIX}/bin
+	cp -f ${SRC} ${DESTDIR}${PREFIX}/bin/${PROG}
+	chmod 755 ${DESTDIR}${PREFIX}/bin/${PROG}
+
+.PHONY: test verbose-test pylint pep8 lint install
