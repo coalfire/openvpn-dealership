@@ -167,12 +167,15 @@ def _write_client(name, ip, netmask, ccd=CCD):
 
 
 @lock
-def delete_client(name, ccd=CCD):
+def delete_client(name, server=SERVER, ccd=None):
     '''
     Delete a client file from the ccd directory.
     Return the full path of the file deleted on success.
     Raise an exception on failure.
     '''
+
+    ccd = ccd if ccd else parse_server(server)['ccd']
+    
     config = os.path.join(ccd, name)
     os.remove(config) 
     return os.path.abspath(config)
@@ -293,7 +296,8 @@ def main():
     client = args.client
     server = args.server
     action = args.action
-    actions[action](client, server=server)
+    output = actions[action](client, server=server)
+    print(str(output))
 
     
 
