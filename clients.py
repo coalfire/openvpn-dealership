@@ -111,7 +111,7 @@ def used_ips(ccd=CCD):
     ips_used = []
 
     for f in os.listdir(ccd):
-        client = parse_client(f, ccd)
+        client = parse_client(f, ccd=ccd)
         if 'ip' in client:
             ip = client['ip']
             ips_used += [ipaddress.ip_address(ip)]
@@ -200,11 +200,12 @@ def delete_client(name, server=SERVER, ccd=None):
     return os.path.abspath(config)
 
 
-def parse_client(name, ccd=CCD):
+def parse_client(name, server=SERVER, ccd=None):
     '''
     Return a dict of client information.
     '''
 
+    ccd = ccd or parse_server(server)['ccd']
     config = os.path.join(ccd, name)
 
     # for example:

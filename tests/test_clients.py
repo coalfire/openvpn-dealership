@@ -211,7 +211,7 @@ class ParseClientTest(unittest.TestCase):
     def testClientMissing(self):
         name = 'does_not_exist'
         err = FileNotFoundError
-        self.assertRaises(err, clients.parse_client, name, self.ccd)
+        self.assertRaises(err, clients.parse_client, name, ccd=self.ccd)
 
     def tearDown(self):
         rmtree(self.ccd)
