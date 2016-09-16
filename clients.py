@@ -189,6 +189,8 @@ def parse_client(name, ccd=CCD):
     # ifconfig_push 192.168.1.2 255.255.255.0
     r = re.compile(r'^ifconfig_push\s+(?P<ip>[0-9.]+)\s+(?P<netmask>[0-9.]+)')
 
+    ip = netmask = ''
+
     with open(config, 'r') as c:
         for line in c:
             match = r.search(line)
