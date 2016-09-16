@@ -1,6 +1,6 @@
 # vpn-dealership
 
-Auto-create openvpn client configs
+Auto-create static openvpn client configs
 
 ## installation
 
