@@ -11,10 +11,30 @@ import time
 import functools
 import argparse
 
-class IPsSaturatedError(Exception): pass
 
+class VPNDealerError(Exception):
+    '''
+    Base class for exceptions in this module.
+    '''
 
-class DuplicateClientError(Exception): pass
+    pass
+
+class IPsSaturatedError(VPNDealerError):
+    '''
+    No IPs are available in this netmask.
+    '''
+
+    def __init__(self, message):
+        self.message = 'No IPs left in ' + message 
+
+class DuplicateClientError(VPNDealerError):
+    '''
+    Client name already in Use 
+    '''
+
+    def __init__(self, message):
+        self.message = message + ' already in use.'
+
 
 SERVER = '/etc/openvpn/server.conf'
 CCD    = '/etc/openvpn/clients'
@@ -118,7 +138,7 @@ def get_new_conf(server=SERVER, ccd=None):
 
     remaining = list(addresses - ips_in_use)
     if len(remaining) == 0:
-        raise IPsSaturatedError
+        raise IPsSaturatedError(server_dict['netmask'])
 
     result['ip']      = sorted(remaining)[0].exploded
 
@@ -159,7 +179,7 @@ def _write_client(name, ip, netmask, ccd=CCD):
     ifconfig = 'ifconfig-push {0} {1}\n'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
-        raise DuplicateClientError
+        raise DuplicateClientError(name)
     with open(config, 'w') as f:
         f.write(ifconfig)
 
