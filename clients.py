@@ -131,8 +131,7 @@ def get_new_conf(server=SERVER, ccd=None):
 
     server_dict = parse_server(server)
     addresses = set(server_dict['addresses'])
-    if not ccd: 
-        ccd = server_dict['ccd']
+    ccd = ccd or server_dict['ccd']
     ips_in_use = set(used_ips(ccd))
     
 
@@ -165,13 +164,12 @@ def new_client(name, server=SERVER, ccd=None):
     ip = conf['ip']
 
     netmask = conf['netmask']
-    if not ccd:
-        ccd = conf['ccd']
+    ccd = ccd or conf['ccd']
 
     return _write_client(name, ip, netmask, ccd)
 
 
-def _write_client(name, ip, netmask, ccd=CCD):
+def _write_client(name, ip, netmask, ccd=None):
     '''
     Create a new client file in the ccd directory.
     Return a dict of client information.
@@ -195,7 +193,7 @@ def delete_client(name, server=SERVER, ccd=None):
     Raise an exception on failure.
     '''
 
-    ccd = ccd if ccd else parse_server(server)['ccd']
+    ccd = ccd or parse_server(server)['ccd']
     
     config = os.path.join(ccd, name)
     os.remove(config) 
@@ -294,8 +292,7 @@ def _unlock_ccd(lockfile):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('action', choices=['new', 'delete'])
-    #parser.add_argument('action', choices=['new', 'delete', 'display'])
+    parser.add_argument('action', choices=['new', 'delete', 'show'])
     parser.add_argument(
         'client',
         help='Name of the client to act upon',
@@ -311,7 +308,8 @@ def main():
     
     actions = {'new': new_client,
                'delete': delete_client,
-               #'display': display_client,
+               'display': parse_client,
+               'show': parse_client,
                }
 
     client = args.client
