@@ -12,15 +12,15 @@ Auto-create static openvpn client configs
     vpn-dealer [-h] [-s SERVER] delete CLIENT
     vpn-dealer [-h] [-s SERVER] show CLIENT
 
-where `SERVER` is a vpn server configuration file,
-(defaulting to `/etc/openvpn/server.conf`)
-and `CLIENT` is the name off a client.
+where `SERVER` is a vpn server configuration file
+(defaulting to `/etc/openvpn/server.conf`),
+and `CLIENT` is the name of a client.
 
 
 ## requirements
 
 * openvpn
-* python3.3 or higher (for `ipaddress`)
+* python 3.3 or higher (for `ipaddress`)
 
 ## testing/devel requirements
 
