@@ -3,7 +3,14 @@
 # Part of vpn-dealership
 # https://github.com/coalfire/vpn-dealership
 
+#FIXME
 # THIS IS NOT FULLY FUNCTIONAL YET.
+# To be run on your vpn server.
+
+#TODO
+# We should probably wrap this and vpn-server-build up as
+# an ansible play.
+
 
 mkdir -p /etc/openvpn/
 # user nobody will need to be able to find files in this dir

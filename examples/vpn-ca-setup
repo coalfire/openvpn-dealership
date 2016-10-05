@@ -3,7 +3,8 @@
 # Part of vpn-dealership
 # https://github.com/coalfire/vpn-dealership
 
-# THIS IS NOT FULLY FUNCTIONAL YET.
+# This sets up your Certificate Authority. 
+# Do not run it on your VPN server.
 
 mkdir -p src
 cd src
@@ -11,21 +12,19 @@ ver='3.0.1'
 ersa="EasyRSA-$ver"
 wget "https://github.com/OpenVPN/easy-rsa/releases/download/$ver/$ersa.tgz"
 tar xf "$ersa.tgz"
-cd "src/$ersa"
+cd "$ersa"
 
+# set pki directory for Easy RSA
+etc="/usr/local/etc/easy-rsa"
+mkdir -p "$etc"
+pki="$etc/pki"
+printf 'set_var EASYRSA_PKI "%s"\n' "$pki" >vars
+
+# Make a PKI
+./easyrsa init-pki
 # Make the Certificate Authority
 echo pwgen -y 64 1
 ./easyrsa build-ca
 
 # Make an emply Certificate Revocation List
 ./easyrsa gen-crl
-
-# Prevent client certs pretending to be a server
-./easyrsa build-server-full server nopass
-
-# copy CA, cert, key to local directory. Perhaps we want to store $pki elsewhere now.
-pki=/usr/local/etc/easy-rsa/pki
-scp $pki/ca.crt             $vpnserver:/etc/openvpn/server-ca.crt
-scp $pki/issued/server.crt  $vpnserver:/etc/openvpn/server.crt
-scp $pki/private/server.key $vpnserver:/etc/openvpn/server.key
-
