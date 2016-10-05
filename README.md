@@ -16,7 +16,6 @@ where `SERVER` is a vpn server configuration file
 (defaulting to `/etc/openvpn/server.conf`),
 and `CLIENT` is the name of a client.
 
-
 ## requirements
 
 * openvpn
