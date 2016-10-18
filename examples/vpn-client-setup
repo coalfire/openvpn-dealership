@@ -10,3 +10,14 @@ cd ~/src/EasyRSA-3.0.1
 # scp the client cert, client key, client conf, server CA, tls-auth.key 
 # to client.
 # Create the CCD file for the client on the server, and chmod 644 it.
+etc="/usr/local/etc/easy-rsa"
+pki="$etc/pki"
+
+client="$1"
+dest="$2"
+creds="$3"
+
+
+scp -i "$creds" $pki/ca.crt                $dest:/etc/openvpn/server-ca.crt
+scp -i "$creds" $pki/issued/"$client".crt  $dest:/etc/openvpn/client.crt
+scp -i "$creds" $pki/private/"$client".key $dest:/etc/openvpn/client.key
