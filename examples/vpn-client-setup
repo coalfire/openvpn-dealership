@@ -2,22 +2,34 @@
 
 # THIS IS NOT FUNCTIONAL YET.
 
-cd ~/src/EasyRSA-3.0.1
+ver='3.0.1'
+ersa="EasyRSA-$ver"
+etc="/usr/local/etc/easy-rsa/pki"
 
-# Create a client cert
+cd "$HOME/src"
+cd "$ersa"
+
+server="$1"
+client="$2"
+dest="$2"
+ssh_key="$3"
+
+pki="$etc/$server"
+
+set_pki() {
+    printf 'set_var EASYRSA_PKI "%s"\n' "$pki" >vars
+}
+
+deliver_client_certs() {
+    scp -i "$ssh_key" "$pki/ca.crt"              "$dest:/etc/openvpn/server-ca.crt"
+    scp -i "$ssh_key" "$pki/issued/$client.crt"  "$dest:/etc/openvpn/client.crt"
+    scp -i "$ssh_key" "$pki/private/$client.key" "$dest:/etc/openvpn/client.key"
+}
+
+set_pki
 ./easyrsa build-client-full "$client" nopass
+deliver_client_certs
 
 # scp the client cert, client key, client conf, server CA, tls-auth.key 
 # to client.
 # Create the CCD file for the client on the server, and chmod 644 it.
-etc="/usr/local/etc/easy-rsa"
-pki="$etc/pki"
-
-client="$1"
-dest="$2"
-creds="$3"
-
-
-scp -i "$creds" $pki/ca.crt                $dest:/etc/openvpn/server-ca.crt
-scp -i "$creds" $pki/issued/"$client".crt  $dest:/etc/openvpn/client.crt
-scp -i "$creds" $pki/private/"$client".key $dest:/etc/openvpn/client.key

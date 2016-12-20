@@ -6,25 +6,47 @@
 # This sets up your Certificate Authority. 
 # Do not run it on your VPN server.
 
-mkdir -p src
-cd src
 ver='3.0.1'
 ersa="EasyRSA-$ver"
-wget "https://github.com/OpenVPN/easy-rsa/releases/download/$ver/$ersa.tgz"
-tar xf "$ersa.tgz"
-cd "$ersa"
+etc="/usr/local/etc/easy-rsa/pki"
 
-# set pki directory for Easy RSA
-etc="/usr/local/etc/easy-rsa"
-mkdir -p "$etc"
-pki="$etc/pki"
-printf 'set_var EASYRSA_PKI "%s"\n' "$pki" >vars
+make_ca() {
+    # set pki directory for Easy RSA
+    mkdir -p "$etc"
+    printf 'set_var EASYRSA_PKI "%s"\n' "$pki" >vars
+    cp vars vars."$server"
 
-# Make a PKI
-./easyrsa init-pki
-# Make the Certificate Authority
-echo pwgen -y 64 1
-./easyrsa build-ca
+    # Make a PKI
+    ./easyrsa init-pki
+    # Make the Certificate Authority
+    ./easyrsa build-ca nopass
+    # Make an emply Certificate Revocation List
+    ./easyrsa gen-crl
+}
 
-# Make an emply Certificate Revocation List
-./easyrsa gen-crl
+build_server() {
+    ./easyrsa build-server-full "$server" nopass
+}
+
+deliver_server_certs() {
+    scp -i "$ssh_key" "$pki/ca.crt"              "$dest:/etc/openvpn/server-ca.crt"
+    scp -i "$ssh_key" "$pki/issued/$server.crt"  "$dest:/etc/openvpn/server.crt"
+    scp -i "$ssh_key" "$pki/private/$server.key" "$dest:/etc/openvpn/server.key"
+}
+
+get_easy_rsa() {
+    mkdir -p src
+    cd src
+    wget "https://github.com/OpenVPN/easy-rsa/releases/download/$ver/$ersa.tgz"
+    tar xf "$ersa.tgz"
+}
+
+server="$1"
+dest="$2"
+ssh_key="$3"
+
+pki="$etc/$server"
+
+make_ca
+build_server
+deliver_server_certs
