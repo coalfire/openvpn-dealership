@@ -23,6 +23,8 @@ openssl dhparam -out dh2048.pem 2048
 # Create a TLS-auth key - this is a PSK which will help prevent DOS attacks.
 openvpn --genkey --secret /etc/openvpn/tls-auth.key
 
+# FIXME copy the tls-auth.key back to the server-specific dir on the CA server
+
 # Allow forwarding of packets
 sysctl net.ipv4.ip_forward=1
 # And make it persistent across reboots.
