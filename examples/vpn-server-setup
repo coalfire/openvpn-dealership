@@ -30,6 +30,8 @@ sysctl net.ipv4.ip_forward=1
 # And make it persistent across reboots.
 printf 'sysctl net.ipv4.ip_forward = 1' >/etc/sysctl.d/50-ip_forward.conf
 
+#FIXME get our server.conf
+
 # clean up our owners and selinux contexts
 chown -R nobody:nobody /etc/openvpn
 restorecon -Rv /etc/openvpn
