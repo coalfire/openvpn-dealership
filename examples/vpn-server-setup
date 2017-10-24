@@ -14,7 +14,7 @@ mkdir -p /etc/openvpn/
 # user nobody will need to be able to find files in this dir
 chmod 711 /etc/openvpn/
 mkdir /etc/openvpn/clients
-chmod 755/etc/openvpn/clients
+chmod 755 /etc/openvpn/clients
 cd /etc/openvpn/
 
 # Create a Diffie-Hellman parameter file to create ephemeral session keys.

@@ -2,17 +2,29 @@
 
 # THIS IS NOT FUNCTIONAL YET.
 
-ver='3.0.1'
-ersa="EasyRSA-$ver"
-etc="/usr/local/etc/easy-rsa/pki"
+die() {
+    status=$1
+    shift
+    warn "$@"
+    exit $status
+}
 
-cd "$HOME/src"
-cd "$ersa"
+warn() {
+    echo "$@" >&2
+}
+
+ver='3.0.1'
+ersa="/usr/local/share/EasyRSA-$ver"
+etc="/usr/local/etc/pki"
+
+usage="USAGE: $0 SERVER CLIENT fetch ca|crt|key|tls|conf
+       $0 SERVER CLIENT create"
+
+cd "$ersa" || die 2 "Can not cd to $ersa"
 
 server="$1"
 client="$2"
-dest="$2"
-ssh_key="$3"
+action="$3"
 
 pki="$etc/$server"
 
@@ -20,18 +32,48 @@ set_pki() {
     printf 'set_var EASYRSA_PKI "%s"\n' "$pki" >vars
 }
 
-deliver_client_certs() {
-    scp -i "$ssh_key" "$pki/ca.crt"              "$dest:/etc/openvpn/server-ca.crt"
-    scp -i "$ssh_key" "$pki/issued/$client.crt"  "$dest:/etc/openvpn/client.crt"
-    scp -i "$ssh_key" "$pki/private/$client.key" "$dest:/etc/openvpn/client.key"
-    scp -i "$ssh_key" "$pki/tls-auth.key"        "$dest:/etc/openvpn/tls-auth.key"
-    scp -i "$ssh_key" "$pki/client.conf"         "$dest:/etc/openvpn/client.conf"
+create() {
+    ./easyrsa build-client-full "$client" nopass
 }
 
-set_pki
-./easyrsa build-client-full "$client" nopass
-deliver_client_certs
+fetch() {
+    test -f "$pki/private/$client.key" || die 8 "No such client $client"
+    case "$to_fetch" in
+      ca)
+        path_to_file="$pki/ca.crt"
+        ;;
+      crt)
+        path_to_file="$pki/issued/$client.crt"
+        ;;
+      key)
+        path_to_file="$pki/private/$client.key"
+        ;;
+      tls)
+        path_to_file="$pki/tls-auth.key"
+        ;;
+      conf)
+        path_to_file="$pki/client.conf"
+        ;;
+      *)
+        die 1 "$usage"
+        ;;
+    esac
+    cat "$path_to_file" || die 4 "No such file $path_to_file"
+}
 
-# scp the client cert, client key, client conf, server CA, tls-auth.key 
-# to client.
-# Create the CCD file for the client on the server, and chmod 644 it.
+test -d "$pki" || die 8 "No such CA $server"
+
+set_pki
+
+case "$action" in
+  create)
+    create
+    ;;
+  fetch)
+    to_fetch="$4"
+    fetch
+    ;;
+  *)
+    die 1 "$usage"
+    ;;
+esac
