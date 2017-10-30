@@ -176,6 +176,7 @@ def _write_client(name, ip, netmask, ccd=None):
     Return a dict of client information.
     '''
 
+    os.umask(0o007)
     ifconfig = 'ifconfig-push {0} {1}\n'.format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
@@ -247,6 +248,7 @@ def _try_lock_ccd(ccd=CCD):
     lockfile = os.path.join(lockdir, fn)
     pid = str(os.getpid())
 
+    os.umask(0o007)
     try:
         with open(lockfile, 'x') as f:
             f.write(pid)
