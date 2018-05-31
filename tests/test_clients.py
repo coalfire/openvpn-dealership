@@ -1,9 +1,9 @@
-import clients
-
 import unittest
 import os
 import sys
 from shutil import rmtree
+
+import clients
 
 sys.path.insert(0, os.path.abspath(".."))
 

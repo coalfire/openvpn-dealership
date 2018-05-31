@@ -1,5 +1,7 @@
-pep8
+pycodestyle
 pylint
 rednose
 nose
 pytest-cov
+black
+mccabe
