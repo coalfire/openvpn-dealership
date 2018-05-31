@@ -17,9 +17,12 @@ pylint:
 pep8: 
 	-$@ ${FILES} | less
 
+venv:
+	virtualenv -p `which python3` venv
+
 install:
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f ${SRC} ${DESTDIR}${PREFIX}/bin/${PROG}
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${PROG}
 
-.PHONY: test verbose-test pylint pep8 lint install
+.PHONY: test verbose-test pylint pep8 lint install venv
