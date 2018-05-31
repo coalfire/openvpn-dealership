@@ -23,7 +23,7 @@ black:
 coverage: py.test
 
 py.test:
-	-$@ --cov=clients tests/test_clients.py
+	-$@ --cov-report term-missing --cov=clients tests/test_clients.py
 
 venv:
 	virtualenv -p `which python3` venv
