@@ -9,13 +9,21 @@ test:
 verbose-test: 
 	nosetests --verbose --rednose
 
-lint: pylint pep8
+lint: pylint pycodestyle black py.test
 
 pylint: 
-	-$@ ${FILES} | less
+	-$@ --rcfile pylint.cfg ${FILES}
 
-pep8: 
-	-$@ ${FILES} | less
+pycodestyle: 
+	-$@ ${FILES}
+
+black:
+	-$@ ${FILES}
+
+coverage: py.test
+
+py.test:
+	-$@ --cov=clients tests/test_clients.py
 
 venv:
 	virtualenv -p `which python3` venv
@@ -25,4 +33,4 @@ install:
 	cp -f ${SRC} ${DESTDIR}${PREFIX}/bin/${PROG}
 	chmod 755 ${DESTDIR}${PREFIX}/bin/${PROG}
 
-.PHONY: test verbose-test pylint pep8 lint install venv
+.PHONY: test verbose-test pylint pycodestyle black py.test lint install venv
