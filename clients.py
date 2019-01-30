@@ -187,7 +187,7 @@ def _write_client(name, ip, netmask, ccd=None):
     Return a dict of client information.
     """
 
-    os.umask(0o007)
+    os.umask(0o003)
     ifconfig = "ifconfig-push {0} {1}\n".format(ip, netmask)
     config = os.path.join(ccd, name)
     if os.path.isfile(config):
